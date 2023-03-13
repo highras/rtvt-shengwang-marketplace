@@ -31,8 +31,8 @@
     dispatch_async(dispatch_get_main_queue(), ^{
         
         
-        self.agora_appId = @"c6abd9c0ec4741489221d53f50e4cb62";
-        self.agora_Token = @"007eJxTYFB8eaJ0xnmXd9xljcmO4X/lcsQXf8zzdLb0/nxawuLAGU4FBrNUcyPLVEsTS8O0FBOj1JREy1SLlNQUIxMzcwtT45TUKZ//JTcEMjKorpNjYmSAQBCfmcHCwoKBAQAulh6x";
+        self.agora_appId = @"a0152df407e24d82ad25db39489dd835";
+//        self.agora_Token = @"007eJxTYFB8eaJ0xnmXd9xljcmO4X/lcsQXf8zzdLb0/nxawuLAGU4FBrNUcyPLVEsTS8O0FBOj1JREy1SLlNQUIxMzcwtT45TUKZ//JTcEMjKorpNjYmSAQBCfmcHCwoKBAQAulh6x";
         self.agora_RoomId = @"888";
         
         
