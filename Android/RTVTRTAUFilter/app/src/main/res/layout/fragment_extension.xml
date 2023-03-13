@@ -27,10 +27,11 @@
                 android:layout_weight="0.5"
                 android:layout_height="match_parent"/>
 
-            <FrameLayout
-                android:id="@+id/fl_remote"
+            <ListView
+                android:transcriptMode="alwaysScroll"
+                android:id="@+id/rtvttest"
                 android:layout_width="0dp"
-                android:layout_weight="0.5"
+                android:layout_weight="1"
                 android:layout_height="match_parent" />
 
         </LinearLayout>
