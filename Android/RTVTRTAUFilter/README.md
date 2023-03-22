@@ -66,8 +66,8 @@
 
 ```java
     RtcEngineConfig config = new RtcEngineConfig();
-    engine = RtcEngine.create(config);
     config.addExtension("agora-iLiveData-filter");
+    engine = RtcEngine.create(config);
     engine.enableExtension("iLiveData", "RTVT", true);
 ```
 
