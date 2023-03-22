@@ -1,95 +1,248 @@
+# 使用云上曲率实时语音识别&翻译插件
+
+本文介绍如何在你的项目中集成和使用云上曲率实时语音识别&翻译插件（以下简称曲率识别及翻译插件），包括Android和iOS平台。
+
+## 技术原理
+
+曲率识别及翻译插件是对云上曲率[实时语音识别](https://docs.ilivedata.com/asr/overview/introduction/)和[实时翻译](https://docs.ilivedata.com/alt/overview/introduction/)核心 API 的封装。通过调用[声网视频 SDK v4.0.0 Beta](https://docs.agora.io/cn/video-call-4.x-beta/product_video_ng?platform=Android) 的 [setExtensionProperty](https://docs.agora.io/cn/video-call-4.x-beta/API%20Reference/java_ng/API/class_irtcengine.html#api_setextensionproperty) 或 [setExtensionPropertyWithVendor](https://docs.agora.io/cn/video-call-4.x-beta/API%20Reference/ios_ng/API/class_irtcengine.html#api_setextensionproperty)方法，传入指定的 `key` 和 `value` 参数，你可以快速集成云上曲率的实时语音识别和翻译的能力。支持的 key 和 value 详见[插件的 key-value 列表]（./模板-插件接口说明v1.md/#方法 key 的 value 说明）。
+
+## 前提条件
+
+- Android 开发环境需满足以下要求：
+  - Android Studio 4.1 以上版本。
+  - 运行 Android 5.0 或以上版本的真机（非模拟器）。
+- iOS 开发环境需满足以下要求：
+  - Xcode 9.0 或以上版本。
+  - 运行 iOS 9.0 或以上版本的真机（非模拟器）。
+
+## 准备工作
+
+### 使用声网 SDK 实现视频通话
+
+曲率识别及翻译插件需要与[声网视频 SDK v4.0.0 Beta](https://docs.agora.io/cn/video-call-4.x-beta/product_video_ng?platform=Android) 搭配使用。参考以下文档集成视频 SDK v4.0.0 Beta 并实现基础的视频通话：
+- [实现视频通话（Android）](https://docs.agora.io/cn/video-call-4.x-beta/start_call_android_ng?platform=Android#%E5%BB%BA%E7%AB%8B%E9%A1%B9%E7%9B%AE)
+- [实现视频通话（iOS）](https://docs.agora.io/cn/video-call-4.x-beta/start_call_ios_ng%20?platform=iOS#%E5%88%9B%E5%BB%BA%E9%A1%B9%E7%9B%AE)
+
+### 购买和激活插件
+
+在声网控制台[购买和激活](https://docs.agora.io/cn/extension_customer/get_extension?platform=All%20Platforms)曲率识别及翻译插件，保存好获取到的 `appKey` 和 `appSecret`，后续初始化插件时需要用到。
+
+### 集成插件
+
+参考如下步骤在你的项目中集成曲率识别及翻译插件：
+
+**Android**
 
 
-## 声网 SDK 的 API 参考
+1. 在[声网云市场下载](https://docs.agora.io/cn/extension_customer/downloads?platform=All%20Platforms)页面下载曲率识别及翻译插件的 Android 插件包。解压后，将所有 `.aar` 文件保存到项目文件夹的  `/app/libs`  路径。
+2. 打开 `app/build.gradle` 文件，在 `dependencies` 中添加如下行：
 
-本节提供声网 SDK 中与使用插件相关的 API 参考。
+   ```java
+   implementation fileTree(dir: "libs", include: ["*.jar", "*.aar"])
+   ```
 
-### Java
-
-- `RtcEngineConfig` 类的 [addExtension](https://docs.agora.io/cn/video-call-4.x-beta/API%20Reference/java_ng/API/rtc_api_data_type.html#api_addextension)
-- `RtcEngine` 类的 [enableExtension](https://docs.agora.io/cn/video-call-4.x-beta/API%20Reference/java_ng/API/class_irtcengine.html#api_enableextension)
-- `RtcEngine` 类的 [setExtensionProperty](https://docs.agora.io/cn/video-call-4.x-beta/API%20Reference/java_ng/API/class_irtcengine.html#api_setextensionproperty)
-- `IMediaExtensionObserver` 类的 [onEvent](https://docs.agora.io/cn/video-call-4.x-beta/API%20Reference/java_ng/API/class_imediaextensionobserver.html#callback_onextensionevent)
-
-### Objective-C
-
-- `AgoraRtcEngineKit` 类的 [enableExtensionWithVendor](https://docs.agora.io/cn/video-call-4.x-beta/API%20Reference/ios_ng/API/class_irtcengine.html#api_enableextension)
-- `AgoraRtcEngineKit` 类的 [setExtensionPropertyWithVendor](https://docs.agora.io/cn/video-call-4.x-beta/API%20Reference/ios_ng/API/class_irtcengine.html#api_setextensionproperty)
-- `AgoraMediaFilterEventDelegate` 类的 [onEvent](https://docs.agora.io/cn/video-call-4.x-beta/API%20Reference/ios_ng/API/class_imediaextensionobserver.html#callback_onextensionevent)
-
-## 插件的 key 概览 <a name="key-value"></a>
-
-在声网 SDK 中调用插件相关 API 时，需要传入指定的 key 和 value。本节介绍云上曲率实时语音识别&翻译（多语种）插件支持的所有 key。
-
-### 方法 key
-
-调用声网 SDK 的 `setExtensionProperty`/`setExtensionPropertyWithVendor` 方法时，支持传入以下 key：
-
-----------------------------------------
-| setExtensionProperty/setExtensionPropertyWithVendor 方法的 key| 描述 |
-| ------------------------------------ | -------- |
-| [startAudioTranslation](#startAudioTranslation) | 开始识别+翻译 |
-| [closeAudioTranslation](#closeAudioTranslation) | 结束识别+翻译 |
-----------------------------------------
+**iOS**
 
 
-### 回调 key
+1. 在[声网云市场下载](https://docs.agora.io/cn/extension_customer/downloads?platform=All%20Platforms)页面下载曲率识别及翻译插件的 iOS 插件包。解压后，将所有 `.framework` 库文件保存到你的项目文件夹下。
+2. 在 Xcode 中[添加动态库](https://help.apple.com/xcode/mac/current/#/dev51a648b07)，确保 **Embed** 属性设置为 **Embed & Sign**。
 
-声网 SDK 的 `onEvent` 回调可能包括以下 key：
-----------------------------------------
-|onEvent 回调的 key| 描述 |
-| ---------------------------- | -------------- |
-| [recognizeResult](#recognizeResult) | 识别结果 |
-| [translateResult](#translateResult) | 翻译结果 |
-| [start](#start)        | 插件启动错误信息 |
-----------------------------------------
+以如下项目结构为例，你可以把库文件保存到 `<ProjectName>` 路径下。
 
-##  方法 key 的 value 说明
+```shell
+.
+├── <ProjectName>
+├── <ProjectName>.xcodeproj
+```
 
-### startAudioTranslation
-----------------------------------------
-value 包含以下参数：
-| value 参数| 描述 |
-| ----------------- | ----------------------- |
-| `appKey`       | app标识 |
-| `appSecret`    | app加密秘钥 |
-| `srcLanguage`  | 源语言 |
-| `destLanguage` | 目标语言 |
-----------------------------------------
+## 调用流程
 
+本节介绍插件相关接口的调用流程。接口的参数解释详见[接口说明](云上曲率实时语音识别&翻译插件接口说明.md)。
 
-### closeAudioTranslation
-----------------------------------------
-value 包含以下参数：
-| value 参数| 描述 |
-| ----------------- | ----------------------- |
-| `end` | 结束 |
-----------------------------------------
+### 1. 启用插件
 
+**Android**
+初始化声网 `AgoraRtcEngine` 时，调用 `enableExtension` 启用插件。
 
-##  回调 key 的 value 说明
+```java
+    RtcEngineConfig config = new RtcEngineConfig();
+    engine = RtcEngine.create(config);
+    config.addExtension("agora-iLiveData-filter");
+    engine.enableExtension("iLiveData", "RTVT", true);
+```
 
-### recognizeResult
+**iOS**
+初始化声网 `AgoraRtcEngine` 时，调用 `enableExtensionWithVendor` 启用插件。
 
-value 包含以下参数：
+```objective-c
+   AgoraRtcEngineConfig *config = [AgoraRtcEngineConfig new];
 
-| value 参数 | 描述|
-| ----------- | ---------------------- |
-| `recognizeResult` | 语音识别结果 |
+   // 监听插件事件，用于接收 onEvent 回调
+   config.eventDelegate = self;
+   self.agoraKit = [AgoraRtcEngineKit sharedEngineWithConfig:config
+                                                    delegate:self];
+   // 开启插件
+   [self.kit enableExtensionWithVendor:[iLiveDataSimpleFilterManager companyName]
+                             extension:[iLiveDataSimpleFilterManager plugName]
+                             enabled:YES]；
+```
 
 
-### translateResult
+### 2. 使用插件
 
-value 包含以下参数：
+**Android**
+调用`setExtensionProperty` 指定 key 为 `startAudioTranslation` 在value中以json格式传入`appkey` `appsecret`等参数
 
-| value 参数 | 描述|
-| ----------- | ---------------------- |
-| `translateResult` | 语音翻译结果 |
+```java
+    JSONObject jsonObject = new JSONObject();
+    jsonObject.put("appKey", "80001000");
+    jsonObject.put("appSecret", "qwerty");
+    jsonObject.put("srclang", "zh");
+    jsonObject.put("dstLang", "en");
+```
 
-### start
 
-value 包含以下参数：
+```java
+    engine.setExtensionProperty(EXTENSION_VENDOR_NAME, EXTENSION_AUDIO_FILTER_VOLUME, "startAudioTranslation", jsonObject.toString());
+```
 
-| value 参数 | 描述|
-| ----------- | ---------------------- |
-| `start` | 启动插件错误信息 对应方法startAudioTranslation |
+
+
+**iOS**
+调用`setExtensionPropertyWithVendor`，指定 key 为 `startAudioTranslation` 并在 value 中传入 `appKey` 和 `appSecret` 等参数。
+
+```objective-c
+    NSDictionary * startDic = @{
+                                //传入appkey
+                                @"appKey":<YOUR_APP_KEY>,
+                                //传入appsecret
+                                @"appSecret":<YOUR_APP_SECRET>,
+                                //传入源语言
+                                @"srcLanguage":@"zh",
+                                //传入目标语言
+                                @"destLanguage":@"en"
+                                };
+    NSData *jsonData = [NSJSONSerialization dataWithJSONObject:startDic options:NSJSONWritingPrettyPrinted error:nil];
+    NSString * jsonStr = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+```
+
+
+```objective-c
+    [self.kit setExtensionPropertyWithVendor:[iLiveDataSimpleFilterManager companyName]
+                                   extension:[iLiveDataSimpleFilterManager plugName]
+                                         key:"startAudioTranslation"
+                                       value:jsonStr];
+```
+
+
+### 3. 结束使用插件
+
+**Android**
+调用 `setExtensionProperty`方法并指定 key 为 `closeAudioTranslation` 来结束曲率识别和翻译插件的使用。
+
+```java
+    engine.setExtensionProperty(EXTENSION_VENDOR_NAME, EXTENSION_AUDIO_FILTER_VOLUME, "closeAudioTranslation", "{}");
+```
+
+
+**iOS**
+调用 `setExtensionPropertyWithVendor`方法并指定 key 为 `closeAudioTranslation` 来结束曲率识别和翻译插件的使用。
+
+```objective-c
+    [self.kit setExtensionPropertyWithVendor:[iLiveDataSimpleFilterManager companyName]
+                                   extension:[iLiveDataSimpleFilterManager plugName]
+                                         key:"closeAudioTranslation"
+                                       value:"end"];
+```
+
+
+
+### 4. 识别和翻译结果回调
+
+**Android**
+初始化成功后，曲率识别及翻译插件会通过 `onEvent` 回调返回识别结果。识别结果的含义详见 `onEvent` 回调。
+
+```java
+@Override
+public void onEvent(String vendor, String extension, String key, String value) {
+    key: "recognizeResult"识别结果标识  "translateResult"翻译结果标识
+      value: 对应key分别为 识别结果 和 翻译结果
+}
+```
+
+**iOS**
+初始化成功后，曲率识别及翻译插件会通过 `onEvent` 回调返回识别结果。识别结果的含义详见 onEvent 回调。
+
+
+```objective-c
+-(void)onEvent:(NSString *)provider extension:(NSString *)extension key:(NSString *)key value:(NSString *)value{
+
+       provider:"iLiveData"
+      extension:"RTVT"
+            key: "recognizeResult"识别结果标识  "translateResult"翻译结果标识
+          value: 对应key分别为 识别结果 和 翻译结果
+
+}
+```
+
+
+## 示例项目
+
+| 平台    | 语言        | 示例项目                                                     |
+| :------ | :---------- | :----------------------------------------------------------- |
+| Android | Java        | [项目示例](https://github.com/highras/rtvt-agora-marketplace) |
+| iOS     | Objective-C | [项目示例](https://github.com/highras/rtvt-agora-marketplace) |
+
+### 运行步骤
+
+**Android**
+
+1. 克隆仓库：
+  ```shell
+	git clone （//TODO: 仓库链接）
+  ```
+2. 从[声网云市场下载](https://docs.agora.io/cn/extension_customer/downloads?platform=All%20Platforms)页面下载曲率识别及翻译插件的 Android 插件包。解压后，将所有 `.aar` 文件保存到 `（TODO:具体路径） ` 。
+3. 在 Android Studio 中打开示例项目 `（TODO: 工程文件的路径）`。
+4. 将项目与 Gradle 文件同步。
+5. 打开 `（TODO: 文件的具体路径）`，进行如下修改：
+	- 将 `<YOUR_APP_ID>` 替换为你的 App ID。获取 App ID 请参考[开始使用 Agora 平台](https://docs.agora.io/cn/Agora%20Platform/get_appid_token?platform=All%20Platforms)。
+	- 将 `<YOUR_APP_KEY>` 和 `<YOUR_APP_SECRET>` 分别替换为你的 `appKey` 和 `appSecret`。获取方式详见[购买和激活插件](https://docs.agora.io/cn/extension_customer/get_extension?platform=All%20Platforms)。
+
+  ```java
+  // TODO: 替换成你的插件对应的代码
+  public interface Config {
+       String mAppId = "<YOUR_APP_ID>";
+       String mAppKey = "<YOUR_APP_KEY>";
+       String mAppSecret = "<YOUR_APP_SECRET>";
+  }
+  ```
+4. 连接一台 Android 真机（非模拟器），运行项目。
+
+
+
+
+**iOS**
+1. 从[声网云市场下载](https://docs.agora.io/cn/extension_customer/downloads?platform=All%20Platforms)页面下载曲率识别及翻译插件的 iOS 插件包。解压后，将所有 `.framwork` 库文件保存到 `（TODO: 具体路径）` 。
+2. 将 iLiveData_Agora.framework 拖入项目。
+3. 项目设置 在TARGETS->Build Settings->Other Linker Flags （选中ALL视图）中添加-ObjC，字母O和C大写，符号“-”请勿忽略。
+4. 静态库中采用Objective-C++实现，因此需要您保证您工程中至少有一个.mm后缀的源文件( 您可以将任意一个.m后缀的文件改名为.mm )。
+5. 打开 `（TODO: 文件的具体路径）`，进行如下修改：
+	- 将 `<YOUR_APP_ID>` 替换为你的 App ID。获取 App ID 请参考[开始使用 Agora 平台](https://docs.agora.io/cn/Agora%20Platform/get_appid_token?platform=All%20Platforms)。
+	- 将 `<YOUR_APP_KEY>` 和 `<YOUR_APP_SECRET>` 分别替换为你的 `appKey` 和 `appSecret`。获取方式详见[购买和激活插件](https://docs.agora.io/cn/extension_customer/get_extension?platform=All%20Platforms)。
+5. 执行 初始化 + 启用插件 步骤
+6. 连接一台 iOS 真机（非模拟器），运行项目。
+
+
+
+
+### 预期效果
+
+运行成功后，示例项目会安装到你的 Android 或 iOS 设备上。
+
+1. 启动 app，你可以在界面上看到 `disableExtension` 和 `Start ASR` 按钮
+2. 点击 `Start RTVT` 开始语音识别。
+3. 点击 `End ASR` 结束语音识别。
+
+## 接口说明
+
+插件所有相关接口的参数解释详见[接口说明](云上曲率实时语音识别&翻译插件接口说明.md)。
