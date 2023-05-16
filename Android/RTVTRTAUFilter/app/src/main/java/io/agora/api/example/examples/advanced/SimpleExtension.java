@@ -179,10 +179,12 @@ public class SimpleExtension extends BaseFragment implements View.OnClickListene
                 JSONObject jsonObject = new JSONObject();
                 try {
 //                    Log.i("sdktest", "java token is " + ApiSecurityExample.genToken(80001000,"qwerty"));
+                    long pid = Long.parseLong(getString(R.string.livedata_pid));
+                    String key = getString(R.string.livedata_key);
                     jsonObject.put("srclang", "zh");
                     jsonObject.put("dstLang", "en");
-                    jsonObject.put("appKey", 90008000);
-                    jsonObject.put("appSecret", "cXdlcnR5");
+                    jsonObject.put("appKey", pid);
+                    jsonObject.put("appSecret", key);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
