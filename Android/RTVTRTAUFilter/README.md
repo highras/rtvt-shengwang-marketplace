@@ -222,13 +222,13 @@ public void onEvent(String vendor, String extension, String key, String value) {
 
 
 **iOS**
-1. 从[声网云市场下载](https://docs.agora.io/cn/extension_customer/downloads?platform=All%20Platforms)页面下载曲率识别及翻译插件的 iOS 插件包。解压后，将所有 `.framwork` 库文件保存到 `（TODO: 具体路径）` 。
+1. 从[声网云市场下载](https://docs.agora.io/cn/extension_customer/downloads?platform=All%20Platforms)页面下载曲率识别及翻译插件的 iOS 插件包并解压。
 2. 将 iLiveData_Agora.framework 拖入项目。
 3. 项目设置 在TARGETS->Build Settings->Other Linker Flags （选中ALL视图）中添加-ObjC，字母O和C大写，符号“-”请勿忽略。
 4. 静态库中采用Objective-C++实现，因此需要您保证您工程中至少有一个.mm后缀的源文件( 您可以将任意一个.m后缀的文件改名为.mm )。
-5. 打开 `（TODO: 文件的具体路径）`，进行如下修改：
-	- 将 `<YOUR_APP_ID>` 替换为你的 App ID。获取 App ID 请参考[开始使用 Agora 平台](https://docs.agora.io/cn/Agora%20Platform/get_appid_token?platform=All%20Platforms)。
-	- 将 `<YOUR_APP_KEY>` 和 `<YOUR_APP_SECRET>` 分别替换为你的 `appKey` 和 `appSecret`。获取方式详见[购买和激活插件](https://docs.agora.io/cn/extension_customer/get_extension?platform=All%20Platforms)。
+5. 打开 ViewController，进行如下修改：
+	- 将 `agora_appId` 替换为你的 App ID。获取 App ID 请参考[开始使用 Agora 平台](https://docs.agora.io/cn/Agora%20Platform/get_appid_token?platform=All%20Platforms)。
+	- 将 `appKey` 和 `appSecret` 分别替换为你的 `appKey` 和 `appSecret`。获取方式详见[购买和激活插件](https://docs.agora.io/cn/extension_customer/get_extension?platform=All%20Platforms)。
 5. 执行 初始化 + 启用插件 步骤
 6. 连接一台 iOS 真机（非模拟器），运行项目。
 
