@@ -17,6 +17,10 @@
 @property(nonatomic,strong)NSString * agora_appId;
 @property(nonatomic,strong)NSString * agora_Token;
 @property(nonatomic,strong)NSString * agora_RoomId;
+
+@property(nonatomic,strong)NSString * appKey;
+@property(nonatomic,strong)NSString * appSecret;
+
 @end
 
 @implementation ViewController
@@ -25,14 +29,15 @@
     [super viewDidLoad];
 
     
+    self.appKey = @"";
+    self.appSecret = @"";
     
     self.view.backgroundColor = [UIColor whiteColor];
     
     dispatch_async(dispatch_get_main_queue(), ^{
         
         
-        self.agora_appId = @"a0152df407e24d82ad25db39489dd835";
-//        self.agora_Token = @"007eJxTYFB8eaJ0xnmXd9xljcmO4X/lcsQXf8zzdLb0/nxawuLAGU4FBrNUcyPLVEsTS8O0FBOj1JREy1SLlNQUIxMzcwtT45TUKZ//JTcEMjKorpNjYmSAQBCfmcHCwoKBAQAulh6x";
+        self.agora_appId = @"";
         self.agora_RoomId = @"888";
         
         
@@ -93,8 +98,8 @@
     
    
             
-        NSDictionary * translateDic = @{@"appKey":@"00000090008000",
-                                        @"appSecret":@"cXdlcnR5",
+        NSDictionary * translateDic = @{@"appKey":self.appKey,
+                                        @"appSecret":self.appSecret,
                                         @"srcLanguage":@"zh",
                                         @"destLanguage":@"en"
                                         
@@ -133,8 +138,8 @@
 -(void)_startRtauButtonClick{
     
     int64_t ts1 = [[NSDate date] timeIntervalSince1970] * 1000;
-    NSDictionary * audioCheckDic = @{@"appKey":@"92000001",
-                                     @"appSecret":@"cXdlcnR5",
+    NSDictionary * audioCheckDic = @{@"appKey":self.appKey,
+                                     @"appSecret":self.appSecret,
                                      @"streamId":[NSString stringWithFormat:@"%lld",ts1],
                                      @"audioLang":@"zh-CN",
                                      @"callbackUrl" : @"callbackUrl",
