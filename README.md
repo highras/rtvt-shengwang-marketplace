@@ -95,8 +95,8 @@
 
 ```java
     JSONObject jsonObject = new JSONObject();
-    jsonObject.put("appKey", "80001000");
-    jsonObject.put("appSecret", "qwerty");
+    jsonObject.put("appKey", "");
+    jsonObject.put("appSecret", "");
     jsonObject.put("srclang", "zh");
     jsonObject.put("dstLang", "en");
 ```
