@@ -5,7 +5,7 @@ use_frameworks!
 
 target 'SW_Test' do
 
-pod 'AgoraRtcEngine_iOS', '~> 4.0.0-rc.1'
+pod 'AgoraRtcEngine_iOS','~> 4.2.0'
 
 end
 
