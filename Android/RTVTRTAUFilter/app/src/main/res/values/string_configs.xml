@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="agora_app_id" translatable="false">a0152df407e24d82ad25db39489dd835</string>
-    <!--    <string name="agora_app_id" translatable="false">6e729e9491fd42eda9e8ded2467853de</string>-->
-    <!--    <string name="agora_access_token" translatable="false">007eJxTYFhlv/x43vSGvtNTGSc+mtP7jN/huPEqwWdnay4zRjufuqKgwGCWam5kmWppYmmYlmJilJqSaJlqkZKaYmRiZm5hapySetJlYnJDICND/bQ8FkYGCATx2RhKUotLDA0ZGAABqiFb</string>-->
-    <string name="agora_access_token" translatable="false">
-</string>
+    <string name="agora_app_id" translatable="false"></string>
+    <string name="agora_access_token" translatable="false"></string>
+    <string name="livedata_pid" translatable="false"></string>
+    <string name="livedata_key" translatable="false"></string>
 </resources>
