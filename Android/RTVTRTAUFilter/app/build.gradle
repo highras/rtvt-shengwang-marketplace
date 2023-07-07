@@ -30,7 +30,7 @@ android {
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar', '*.aar'])
 
-    def agora_sdk_version = "4.0.0-rc.1"
+    def agora_sdk_version = "4.2.0"
     // case 1: full single lib
     implementation "io.agora.rtc:full-sdk:${agora_sdk_version}"
     implementation "io.agora.rtc:full-screen-sharing:${agora_sdk_version}"
