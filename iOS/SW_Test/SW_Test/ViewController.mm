@@ -18,8 +18,11 @@
 @property(nonatomic,strong)NSString * agora_Token;
 @property(nonatomic,strong)NSString * agora_RoomId;
 
-@property(nonatomic,strong)NSString * appKey;
-@property(nonatomic,strong)NSString * appSecret;
+@property(nonatomic,strong)NSString * appKeyRTVT;
+@property(nonatomic,strong)NSString * appSecretRTVT;
+
+@property(nonatomic,strong)NSString * appKeyRTAU;
+@property(nonatomic,strong)NSString * appSecretRTAU;
 
 @end
 
@@ -29,8 +32,14 @@
     [super viewDidLoad];
 
     
-    self.appKey = @"";
-    self.appSecret = @"";
+    //翻译识别
+    self.appKeyRTVT = @"";
+    self.appSecretRTVT = @"";
+    
+    
+    //审核
+    self.appKeyRTAU = @"";
+    self.appSecretRTAU = @"";
     
     self.view.backgroundColor = [UIColor whiteColor];
     
@@ -98,8 +107,8 @@
     
    
             
-        NSDictionary * translateDic = @{@"appKey":self.appKey,
-                                        @"appSecret":self.appSecret,
+        NSDictionary * translateDic = @{@"appKey":self.appKeyRTVT,
+                                        @"appSecret":self.appSecretRTVT,
                                         @"srcLanguage":@"zh",
                                         @"destLanguage":@"en"
                                         
@@ -138,8 +147,8 @@
 -(void)_startRtauButtonClick{
     
     int64_t ts1 = [[NSDate date] timeIntervalSince1970] * 1000;
-    NSDictionary * audioCheckDic = @{@"appKey":self.appKey,
-                                     @"appSecret":self.appSecret,
+    NSDictionary * audioCheckDic = @{@"appKey":self.appKeyRTAU,
+                                     @"appSecret":self.appSecretRTAU,
                                      @"streamId":[NSString stringWithFormat:@"%lld",ts1],
                                      @"audioLang":@"zh-CN",
                                      @"callbackUrl" : @"callbackUrl",
