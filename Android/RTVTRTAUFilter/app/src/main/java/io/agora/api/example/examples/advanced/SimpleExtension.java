@@ -178,13 +178,28 @@ public class SimpleExtension extends BaseFragment implements View.OnClickListene
                 JSONObject jsonObject = new JSONObject();
                 try {
 //                    Log.i("sdktest", "java token is " + ApiSecurityExample.genToken(80001000,"qwerty"));
+                    String spid  = getString(R.string.livedata_translate_pid);
+                    if (spid.isEmpty()){
+                        showAlert("请配置实时翻译的项目id");
+                        return;
+                    }
+                    long pid = Long.parseLong(spid);
+
+                    String skey  = getString(R.string.livedata_translate_key);
+                    if (skey.isEmpty()){
+                        showAlert("请配置实时翻译的秘钥");
+                        return;
+                    }
+
                     jsonObject.put("srclang", "zh");
                     jsonObject.put("dstLang", "en");
-                    jsonObject.put("appKey", 123);
-                    jsonObject.put("appSecret", "123");
+                    jsonObject.put("appKey", pid);
+                    jsonObject.put("appSecret", skey);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
+                Toast.makeText(getContext(), "开始翻译", Toast.LENGTH_LONG).show();
+
                 engine.setExtensionProperty(EXTENSION_VENDOR_NAME, EXTENSION_AUDIO_FILTER_VOLUME, "startAudioTranslation", jsonObject.toString());
             }
         });
@@ -200,7 +215,6 @@ public class SimpleExtension extends BaseFragment implements View.OnClickListene
         startaudit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(getContext(), "开始审核", Toast.LENGTH_LONG).show();
                 JSONObject jsonObject = new JSONObject();
                 try {
 //                    Log.i("sdktest", "java token is " + ApiSecurityExample.genToken(80001000,"qwerty"));
@@ -210,13 +224,26 @@ public class SimpleExtension extends BaseFragment implements View.OnClickListene
                     jsonObject.put("videocallbackUrl", "");
                     jsonObject.put("audioLang", "zh-CN");
 
-                    String key = "cXdlcnR5";
 
-                    jsonObject.put("appKey", 123);
-                    jsonObject.put("appSecret", "123");
+                    String spid  = getString(R.string.livedata_audit_pid);
+                    if (spid.isEmpty()){
+                        showAlert("请配置实时审核的项目id");
+                        return;
+                    }
+                    long pid = Long.parseLong(spid);
+
+                    String skey  = getString(R.string.livedata_audit_key);
+                    if (skey.isEmpty()){
+                        showAlert("请配置实时审核的秘钥");
+                        return;
+                    }
+
+                    jsonObject.put("appKey", pid);
+                    jsonObject.put("appSecret", skey);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
+                Toast.makeText(getContext(), "开始审核", Toast.LENGTH_LONG).show();
                 Log.i("sdktest","start json " + jsonObject.toString());
                 int ret = engine.setExtensionProperty(EXTENSION_VENDOR_NAME, EXTENSION_VIDEO_FILTER_WATERMARK, "startAudit", jsonObject.toString());
             }
@@ -266,6 +293,10 @@ public class SimpleExtension extends BaseFragment implements View.OnClickListene
              * The App ID issued to you by Agora. See <a href="https://docs.agora.io/en/Agora%20Platform/token#get-an-app-id"> How to get the App ID</a>
              */
             config.mAppId = getString(R.string.agora_app_id);
+            if (config.mAppId.isEmpty()){
+                showAlert("请配置声网appid");
+                return;
+            }
             /** Sets the channel profile of the Agora RtcEngine.
              CHANNEL_PROFILE_COMMUNICATION(0): (Default) The Communication profile.
              Use this profile in one-on-one calls or group calls, where all users can talk freely.
