@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="agora_app_id" translatable="false"></string>
+    <string name="agora_app_id" translatable="false">a0152df407e24d82ad25db39489dd835</string>
     <string name="agora_access_token" translatable="false"></string>
     <string name="livedata_pid" translatable="false"></string>
     <string name="livedata_key" translatable="false"></string>

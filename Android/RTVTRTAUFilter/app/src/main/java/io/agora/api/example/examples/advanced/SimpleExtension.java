@@ -21,7 +21,6 @@ import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ListView;
 import android.widget.SeekBar;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -74,18 +73,18 @@ public class SimpleExtension extends BaseFragment implements View.OnClickListene
     public static final String ENABLE_WATER_MARK_FLAG = "plugin.watermark.wmEffectEnabled";
     public static final String ENABLE_WATER_MARK_STRING = "plugin.watermark.wmStr";
     public static final String KEY_ADJUST_VOLUME_CHANGE = "volume";
-    private FrameLayout local_view;
+    private FrameLayout local_view, remote_view;
     private EditText et_channel;
     private Button join;
     private RtcEngine engine;
     private int myUid;
     private boolean joined = false;
+    private SeekBar record;
     ListView rtvttestview;
+    ArrayAdapter srcadapter;
     ArrayList<String> srcarrayList = new ArrayList<>();
 
-    ArrayAdapter srcadapter;
 
-    private SeekBar record;
     private Button startaudit, closeAudit, starttrans,stoptrans, stopextension;
 
 
@@ -100,6 +99,16 @@ public class SimpleExtension extends BaseFragment implements View.OnClickListene
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    void addlog(String msg){
+        this.runOnUIThread(new Runnable() {
+            @Override
+            public void run() {
+                srcarrayList.add(msg);
+                srcadapter.notifyDataSetChanged();
+            }
+        });
     }
 
     SeekBar.OnSeekBarChangeListener seekBarChangeListener = new SeekBar.OnSeekBarChangeListener() {
@@ -134,17 +143,6 @@ public class SimpleExtension extends BaseFragment implements View.OnClickListene
         return view;
     }
 
-
-    void addlog(String msg){
-        this.runOnUIThread(new Runnable() {
-            @Override
-            public void run() {
-                srcarrayList.add(msg);
-                srcadapter.notifyDataSetChanged();
-            }
-        });
-    }
-
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -154,10 +152,6 @@ public class SimpleExtension extends BaseFragment implements View.OnClickListene
         starttrans = view.findViewById(R.id.starttrans);
         stoptrans = view.findViewById(R.id.stoptrans);
         stopextension = view.findViewById(R.id.stopextension);
-        rtvttestview = view.findViewById(R.id.rtvttest);
-        srcadapter = new ArrayAdapter(getContext(), android.R.layout.simple_list_item_1, srcarrayList);
-
-        rtvttestview.setAdapter(srcadapter);
 
         et_channel = view.findViewById(R.id.et_channel);
         view.findViewById(R.id.btn_join).setOnClickListener(this);
@@ -165,6 +159,11 @@ public class SimpleExtension extends BaseFragment implements View.OnClickListene
         record.setOnSeekBarChangeListener(seekBarChangeListener);
         record.setEnabled(false);
         local_view = view.findViewById(R.id.fl_local);
+        remote_view = view.findViewById(R.id.fl_remote);
+        rtvttestview = view.findViewById(R.id.rtvttest);
+        srcadapter = new ArrayAdapter(getContext(), android.R.layout.simple_list_item_1, srcarrayList);
+        rtvttestview.setAdapter(srcadapter);
+
 
         stopextension.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -179,12 +178,10 @@ public class SimpleExtension extends BaseFragment implements View.OnClickListene
                 JSONObject jsonObject = new JSONObject();
                 try {
 //                    Log.i("sdktest", "java token is " + ApiSecurityExample.genToken(80001000,"qwerty"));
-                    long pid = Long.parseLong(getString(R.string.livedata_pid));
-                    String key = getString(R.string.livedata_key);
                     jsonObject.put("srclang", "zh");
                     jsonObject.put("dstLang", "en");
-                    jsonObject.put("appKey", pid);
-                    jsonObject.put("appSecret", key);
+                    jsonObject.put("appKey", 123);
+                    jsonObject.put("appSecret", "123");
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -200,7 +197,6 @@ public class SimpleExtension extends BaseFragment implements View.OnClickListene
         });
 
 
-
         startaudit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -209,12 +205,15 @@ public class SimpleExtension extends BaseFragment implements View.OnClickListene
                 try {
 //                    Log.i("sdktest", "java token is " + ApiSecurityExample.genToken(80001000,"qwerty"));
                     ArrayList<String> attrs = new ArrayList<String>(){{add("1");add("2");}};
-                    jsonObject.put("streamId", "1234567891");
-                    jsonObject.put("callbackUrl", "");
+                    jsonObject.put("streamId", String.valueOf(System.currentTimeMillis()));
+                    jsonObject.put("audiocallbackUrl", "");
+                    jsonObject.put("videocallbackUrl", "");
                     jsonObject.put("audioLang", "zh-CN");
 
-                    jsonObject.put("appKey", 92000001);
-                    jsonObject.put("appSecret", "cXdlcnR5");
+                    String key = "cXdlcnR5";
+
+                    jsonObject.put("appKey", 123);
+                    jsonObject.put("appSecret", "123");
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -300,10 +299,11 @@ public class SimpleExtension extends BaseFragment implements View.OnClickListene
             int ret = engine.enableExtension(EXTENSION_VENDOR_NAME, EXTENSION_AUDIO_FILTER_VOLUME, true);
             // enable video filter before enable video
 
+            Log.i("sdktest", "ret is " + ret);
+            ret = engine.enableExtension(EXTENSION_VENDOR_NAME, EXTENSION_VIDEO_FILTER_WATERMARK, true);
+            // enable video filter before enable video
 
-//            ret = engine.enableExtension(EXTENSION_VENDOR_NAME, EXTENSION_VIDEO_FILTER_WATERMARK, true);
-
-
+            Log.i("sdktest", "ret is " + ret);
 
             if (!AndPermission.hasPermissions(this, Permission.Group.STORAGE, Permission.Group.MICROPHONE, Permission.Group.CAMERA)) {
 
@@ -314,20 +314,21 @@ public class SimpleExtension extends BaseFragment implements View.OnClickListene
                         Permission.Group.CAMERA
                 ).onGranted(permissions ->
                 {
-//                    engine.enableVideo();
+                    engine.enableVideo();
                     TextureView textureView = new TextureView(context);
                     if(local_view.getChildCount() > 0)
                     {
                         local_view.removeAllViews();
                     }
+                    // Add to the local container
                     local_view.addView(textureView, new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+                    // Setup local video to render your local camera preview
                     engine.setupLocalVideo(new VideoCanvas(textureView, RENDER_MODE_HIDDEN, 0));
-//                    engine.startPreview();
+                    engine.startPreview();
                 }).start();
             }
-            else
-            {
-//                engine.enableVideo();
+            else{
+                engine.enableVideo();
                 TextureView textureView = new TextureView(context);
                 if(local_view.getChildCount() > 0)
                 {
@@ -335,7 +336,7 @@ public class SimpleExtension extends BaseFragment implements View.OnClickListene
                 }
                 local_view.addView(textureView, new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
                 engine.setupLocalVideo(new VideoCanvas(textureView, RENDER_MODE_HIDDEN, 0));
-//                engine.startPreview();
+                engine.startPreview();
             }
 
 
@@ -386,15 +387,14 @@ public class SimpleExtension extends BaseFragment implements View.OnClickListene
                 // call when join button hit
                 String channelId = et_channel.getText().toString();
                 // Check permission
-                if (AndPermission.hasPermissions(this, Permission.Group.STORAGE, Permission.Group.MICROPHONE, Permission.Group.CAMERA)) {
+                if (AndPermission.hasPermissions(this, Permission.Group.STORAGE, Permission.Group.MICROPHONE)) {
                     joinChannel(channelId);
                     return;
                 }
                 // Request permission
                 AndPermission.with(this).runtime().permission(
                         Permission.Group.STORAGE,
-                        Permission.Group.MICROPHONE,
-                        Permission.Group.CAMERA
+                        Permission.Group.MICROPHONE
                 ).onGranted(permissions ->
                 {
                     // Permissions Granted
@@ -477,7 +477,6 @@ public class SimpleExtension extends BaseFragment implements View.OnClickListene
      * The SDK uses this class to report to the app on SDK runtime events.
      */
     private final IRtcEngineEventHandler iRtcEngineEventHandler = new IRtcEngineEventHandler() {
-
         /**Occurs when a user leaves the channel.
          * @param stats With this callback, the application retrieves the channel information,
          *              such as the call duration and statistics.*/
@@ -528,11 +527,15 @@ public class SimpleExtension extends BaseFragment implements View.OnClickListene
             else{
                 handler.post(() ->
                 {
+                    if(remote_view.getChildCount() > 0){
+                        remote_view.removeAllViews();
+                    }
                     /**Display remote video stream*/
                     TextureView textureView = null;
                     // Create render view by RtcEngine
                     textureView = new TextureView(context);
                     // Add to the remote container
+                    remote_view.addView(textureView, new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
                     // Setup remote video to render
                     engine.setupRemoteVideo(new VideoCanvas(textureView, RENDER_MODE_HIDDEN, uid));
                 });
@@ -574,9 +577,10 @@ public class SimpleExtension extends BaseFragment implements View.OnClickListene
 
     @Override
     public void onEvent(String vendor, String extension, String key, String value) {
-        addlog(value);
-//        Log.e(TAG, "onEvent vendor: " + vendor + "  extension: " + extension + "  key: " + key + "  value: " + value);
+        if (vendor.equals("iLiveData"))
+            addlog(value);
     }
+
 
     @Override
     public void onStarted(String s, String s1) {
