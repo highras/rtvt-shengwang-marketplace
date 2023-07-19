@@ -219,9 +219,13 @@ public class SimpleExtension extends BaseFragment implements View.OnClickListene
                 try {
 //                    Log.i("sdktest", "java token is " + ApiSecurityExample.genToken(80001000,"qwerty"));
                     ArrayList<String> attrs = new ArrayList<String>(){{add("1");add("2");}};
+
+                    String audiocallbackUrl = getString(R.string.livedata_audiocallbackUrl);
+                    String videocallbackUrl = getString(R.string.livedata_videocallbackUrl);
+
                     jsonObject.put("streamId", String.valueOf(System.currentTimeMillis()));
-                    jsonObject.put("audiocallbackUrl", "");
-                    jsonObject.put("videocallbackUrl", "");
+                    jsonObject.put("audiocallbackUrl", audiocallbackUrl);
+                    jsonObject.put("videocallbackUrl", videocallbackUrl);
                     jsonObject.put("audioLang", "zh-CN");
 
 
