@@ -2,6 +2,9 @@
 <resources>
     <string name="agora_app_id" translatable="false"></string>
     <string name="agora_access_token" translatable="false"></string>
-    <string name="livedata_pid" translatable="false"></string>
-    <string name="livedata_key" translatable="false"></string>
+    <string name="livedata_translate_pid" translatable="false"></string>
+    <string name="livedata_translate_key" translatable="false"></string>
+
+    <string name="livedata_audit_pid" translatable="false"></string>
+    <string name="livedata_audit_key" translatable="false"></string>
 </resources>
