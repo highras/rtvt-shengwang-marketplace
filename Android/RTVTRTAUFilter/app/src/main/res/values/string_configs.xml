@@ -7,6 +7,5 @@
 
     <string name="livedata_audit_pid" translatable="false"></string>
     <string name="livedata_audit_key" translatable="false"></string>
-    <string name="livedata_audiocallbackUrl" translatable="false"></string>
-    <string name="livedata_videocallbackUrl" translatable="false"></string>
+    <string name="livedata_callbackUrl" translatable="false"></string>
 </resources>

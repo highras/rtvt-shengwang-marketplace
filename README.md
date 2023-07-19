@@ -201,7 +201,7 @@ public void onEvent(String vendor, String extension, String key, String value) {
   ```shell
 	git clone (https://github.com/highras/rtvt-agora-marketplace)
   ```
-2. 将项目的\app\src\main\res\values\string_configs.xml 文件中的"agora_app_id" 和"agora_access_token"替换成你自己声网的appid和apptoken 获取 App ID 请参考[开始使用 Agora 平台](https://docs.agora.io/cn/Agora%20Platform/get_appid_token?platform=All%20Platforms); 将"livedata_pid" 和 "livedata_key"替换成云上曲率项目id和key  获取方式详见[购买和激活插件](https://docs.agora.io/cn/extension_customer/get_extension?platform=All%20Platforms)。
+2. 将项目的\app\src\main\res\values\string_configs.xml 文件中的"agora_app_id" 和"agora_access_token"替换成你自己声网的appid和apptoken 获取 App ID 请参考[开始使用 Agora 平台](https://docs.agora.io/cn/Agora%20Platform/get_appid_token?platform=All%20Platforms); 将"livedata_translate_pid" 和 "livedata_translate_key"替换成云上曲率项目id和key  获取方式详见[购买和激活插件](https://docs.agora.io/cn/extension_customer/get_extension?platform=All%20Platforms)。
 3. 连接一台 Android 真机（非模拟器），运行项目。 输入频道号  点击“加入频道” 加入成功后 点击"开始翻译" 界面可以看见翻译结果
 
 
