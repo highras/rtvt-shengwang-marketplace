@@ -460,15 +460,6 @@ public class SimpleExtension extends BaseFragment implements View.OnClickListene
         }
     }
 
-    private boolean hasAgoraSimpleFilterLib(){
-        try {
-            Class<?> aClass = Class.forName("io.agora.extension.ExtensionManager");
-            return aClass != null;
-        } catch (ClassNotFoundException e) {
-            return false;
-        }
-    }
-
     /**
      * @param channelId Specify the channel name that you want to join.
      *                  Users that input the same channel name join the same channel.
@@ -504,6 +495,8 @@ public class SimpleExtension extends BaseFragment implements View.OnClickListene
 
 
     }
+
+
 
     /**
      * IRtcEngineEventHandler is an abstract class providing default implementation.
