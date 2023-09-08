@@ -207,6 +207,7 @@ public class SimpleExtension extends BaseFragment implements View.OnClickListene
         stoptrans.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Toast.makeText(getContext(), "结束翻译", Toast.LENGTH_LONG).show();
                 engine.setExtensionProperty(EXTENSION_VENDOR_NAME, EXTENSION_AUDIO_FILTER_VOLUME, "closeAudioTranslation", "{}");
             }
         });
