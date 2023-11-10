@@ -165,8 +165,21 @@
 ```java
 @Override
 public void onEvent(String vendor, String extension, String key, String value) {
-    key: "recognizeResult"识别结果标识  "translateResult"翻译结果标识
-      value: 对应key分别为 识别结果 和 翻译结果
+    key: "recognizeResult" 识别结果  
+    value: json结构
+          {
+              ""result", 识别结果
+              "startTs", 开始时间戳
+              "endTs",结束时间戳
+          }
+          ~~ 
+    和 "translateResult" 翻译结果
+    value: json结构
+          {
+              ""result", 翻译结果
+              "startTs", 开始时间戳
+              "endTs",结束时间戳
+          }
 }
 ```
 
@@ -179,9 +192,21 @@ public void onEvent(String vendor, String extension, String key, String value) {
 
        provider:"iLiveData"
       extension:"RTVT"
-            key: "recognizeResult"识别结果标识  "translateResult"翻译结果标识
-          value: 对应key分别为 识别结果 和 翻译结果
-
+      key: "recognizeResult" 识别结果  
+      value: json结构
+            {
+                ""result", 识别结果
+                "startTs", 开始时间戳
+                "endTs",结束时间戳
+            }
+            ~~ 
+      和 "translateResult" 翻译结果
+      value: json结构
+            {
+                ""result", 翻译结果
+                "startTs", 开始时间戳
+                "endTs",结束时间戳
+            }
 }
 ```
 
