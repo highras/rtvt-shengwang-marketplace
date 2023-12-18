@@ -12,6 +12,7 @@
   - Android Studio 4.1 以上版本。
   - 运行 Android 5.0 或以上版本的真机（非模拟器）。
 - iOS 开发环境需满足以下要求：
+  
   - Xcode 9.0 或以上版本。
   - 运行 iOS 9.0 或以上版本的真机（非模拟器）。
 
@@ -40,7 +41,7 @@
    ```java
    implementation fileTree(dir: "libs", include: ["*.jar", "*.aar"])
    ```
-
+ 
 **iOS**
 
 
@@ -95,8 +96,8 @@
 
 ```java
     JSONObject jsonObject = new JSONObject();
-    jsonObject.put("appKey", "");
-    jsonObject.put("appSecret", "");
+    jsonObject.put("appKey", 1234567);
+    jsonObject.put("appSecret", "xxxxx");
     jsonObject.put("srclang", "zh");
     jsonObject.put("dstLang", "en");
 ```
