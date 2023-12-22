@@ -83,23 +83,16 @@ public class SimpleExtension extends BaseFragment implements View.OnClickListene
     ListView rtvttestview;
     ArrayAdapter srcadapter;
     ArrayList<String> srcarrayList = new ArrayList<>();
-
-
-    private Button startaudit, closeAudit, starttrans,stoptrans, stopextension;
-
-
-
-    private void initMediaPlayer() {
-        try {
-            AssetFileDescriptor fd = getActivity().getAssets().openFd("zh.wav");
-            mediaPlayer.setDataSource(fd.getFileDescriptor(), fd.getStartOffset(), fd.getLength());
-            mediaPlayer.setLooping(true);//设置为循环播放
-            mediaPlayer.prepare();//初始化播放器MediaPlayer
-            mediaPlayer.start();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
+    String agora_app_id;
+    String agora_access_token;
+    long livedata_translate_pid;
+    String livedata_translate_key;
+    long livedata_audit_pid;
+    String livedata_audit_key;
+    String livedata_callbackUrl;
+    String livedata_translate_srclang;
+    String livedata_translate_dstlang;
+    String livedata_audit_lang;
 
     void addlog(String msg){
         this.runOnUIThread(new Runnable() {
@@ -147,12 +140,6 @@ public class SimpleExtension extends BaseFragment implements View.OnClickListene
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         join = view.findViewById(R.id.btn_join);
-        startaudit = view.findViewById(R.id.startaudit);
-        closeAudit = view.findViewById(R.id.closeAudit);
-        starttrans = view.findViewById(R.id.starttrans);
-        stoptrans = view.findViewById(R.id.stoptrans);
-        stopextension = view.findViewById(R.id.stopextension);
-
         et_channel = view.findViewById(R.id.et_channel);
         view.findViewById(R.id.btn_join).setOnClickListener(this);
         record = view.findViewById(R.id.recordingVol);
@@ -164,107 +151,32 @@ public class SimpleExtension extends BaseFragment implements View.OnClickListene
         srcadapter = new ArrayAdapter(getContext(), android.R.layout.simple_list_item_1, srcarrayList);
         rtvttestview.setAdapter(srcadapter);
 
+        view.findViewById(R.id.startaudit).setOnClickListener(this);
+        view.findViewById(R.id.closeAudit).setOnClickListener(this);
+        view.findViewById(R.id.starttrans).setOnClickListener(this);
+        view.findViewById(R.id.stoptrans).setOnClickListener(this);
+        view.findViewById(R.id.stopextension).setOnClickListener(this);
 
-        stopextension.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                engine.enableExtension(EXTENSION_VENDOR_NAME, EXTENSION_AUDIO_FILTER_VOLUME, false);
-            }
-        });
+        agora_app_id = getString(R.string.agora_app_id);
+        agora_access_token = getString(R.string.agora_access_token);
+        String slivedata_translate_pid = getString(R.string.livedata_translate_pid);
+        if (slivedata_translate_pid.isEmpty())
+            livedata_translate_pid = 0;
+        else
+            livedata_translate_pid = Long.parseLong(slivedata_translate_pid);
+        livedata_translate_key = getString(R.string.livedata_translate_key);
 
-        starttrans.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                JSONObject jsonObject = new JSONObject();
-                try {
-//                    Log.i("sdktest", "java token is " + ApiSecurityExample.genToken(80001000,"qwerty"));
-                    String spid  = getString(R.string.livedata_translate_pid);
-                    if (spid.isEmpty()){
-                        showAlert("请配置实时翻译的项目id");
-                        return;
-                    }
-                    long pid = Long.parseLong(spid);
+        String slivedata_audit_pid = getString(R.string.livedata_audit_pid);
+        if (slivedata_audit_pid.isEmpty())
+            livedata_audit_pid = 0;
+        else
+            livedata_audit_pid = Long.parseLong(slivedata_audit_pid);
+        livedata_audit_key = getString(R.string.livedata_audit_key);
+        livedata_callbackUrl = getString(R.string.livedata_callbackUrl);
 
-                    String skey  = getString(R.string.livedata_translate_key);
-                    if (skey.isEmpty()){
-                        showAlert("请配置实时翻译的秘钥");
-                        return;
-                    }
-
-                    jsonObject.put("srclang", "zh");
-                    jsonObject.put("dstLang", "en");
-                    jsonObject.put("appKey", pid);
-                    jsonObject.put("appSecret", skey);
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-                Toast.makeText(getContext(), "开始翻译", Toast.LENGTH_LONG).show();
-
-                engine.setExtensionProperty(EXTENSION_VENDOR_NAME, EXTENSION_AUDIO_FILTER_VOLUME, "startAudioTranslation", jsonObject.toString());
-            }
-        });
-
-        stoptrans.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Toast.makeText(getContext(), "结束翻译", Toast.LENGTH_LONG).show();
-                engine.setExtensionProperty(EXTENSION_VENDOR_NAME, EXTENSION_AUDIO_FILTER_VOLUME, "closeAudioTranslation", "{}");
-            }
-        });
-
-
-        startaudit.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                JSONObject jsonObject = new JSONObject();
-                try {
-//                    Log.i("sdktest", "java token is " + ApiSecurityExample.genToken(80001000,"qwerty"));
-                    ArrayList<String> attrs = new ArrayList<String>(){{add("1");add("2");}};
-
-                    String callbackUrl = getString(R.string.livedata_callbackUrl);
-
-                    jsonObject.put("streamId", String.valueOf(System.currentTimeMillis()));
-                    jsonObject.put("callbackUrl", callbackUrl);
-                    jsonObject.put("audioLang", "zh-CN");
-
-
-                    String spid  = getString(R.string.livedata_audit_pid);
-                    if (spid.isEmpty()){
-                        showAlert("请配置实时审核的项目id");
-                        return;
-                    }
-                    long pid = Long.parseLong(spid);
-
-                    String skey  = getString(R.string.livedata_audit_key);
-                    if (skey.isEmpty()){
-                        showAlert("请配置实时审核的秘钥");
-                        return;
-                    }
-
-                    jsonObject.put("appKey", pid);
-                    jsonObject.put("appSecret", skey);
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-                Toast.makeText(getContext(), "开始审核", Toast.LENGTH_LONG).show();
-                Log.i("sdktest","start json " + jsonObject.toString());
-                int ret = engine.setExtensionProperty(EXTENSION_VENDOR_NAME, EXTENSION_VIDEO_FILTER_WATERMARK, "startAudit", jsonObject.toString());
-            }
-        });
-
-        closeAudit.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-//                engine.enableExtension(EXTENSION_VENDOR_NAME, EXTENSION_VIDEO_FILTER_WATERMARK, false);
-
-
-                Toast.makeText(getContext(), "结束审核", Toast.LENGTH_LONG).show();
-
-                int ret = engine.setExtensionProperty(EXTENSION_VENDOR_NAME, EXTENSION_VIDEO_FILTER_WATERMARK, "closeAudit", "{}");
-                Log.i("sdktest","setExtensionProperty closeAudit " + ret);
-
-            }
-        });
+        livedata_translate_srclang = getString(R.string.livedata_translate_srclang);
+        livedata_translate_dstlang = getString(R.string.livedata_translate_dstlang);
+        livedata_audit_lang = getString(R.string.livedata_audit_lang);
     }
 
     @Override
@@ -318,6 +230,10 @@ public class SimpleExtension extends BaseFragment implements View.OnClickListene
             config.mExtensionObserver = this;
             config.mEventHandler = iRtcEngineEventHandler;
             engine = RtcEngine.create(config);
+            if (engine == null){
+                showAlert("RtcEngine.create error");
+                return;
+            }
             /**
              * Enable/Disable extension.
              *
@@ -397,22 +313,6 @@ public class SimpleExtension extends BaseFragment implements View.OnClickListene
         engine = null;
     }
 
-    private void setWaterMarkProperty(){
-
-        String jsonValue = null;
-        JSONObject o = new JSONObject();
-        try {
-            o.put(ENABLE_WATER_MARK_STRING, "hello world");
-            o.put(ENABLE_WATER_MARK_FLAG, true);
-            jsonValue = o.toString();
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        if (jsonValue != null) {
-            engine.setExtensionProperty(EXTENSION_VENDOR_NAME, EXTENSION_VIDEO_FILTER_WATERMARK, KEY_ENABLE_WATER_MARK, jsonValue);
-        }
-    }
-
     @Override
     public void onClick(View v) {
         if (v.getId() == R.id.btn_join) {
@@ -459,6 +359,61 @@ public class SimpleExtension extends BaseFragment implements View.OnClickListene
                 record.setProgress(0);
             }
         }
+        else if(v.getId() == R.id.stopextension){
+            engine.enableExtension(EXTENSION_VENDOR_NAME, EXTENSION_AUDIO_FILTER_VOLUME, false);
+
+        }else if(v.getId() == R.id.starttrans){
+            JSONObject jsonObject = new JSONObject();
+            try {
+                jsonObject.put("srclang", livedata_translate_srclang);
+                jsonObject.put("dstLang", livedata_translate_dstlang);
+
+                jsonObject.put("asrResult", true);
+                jsonObject.put("asrTempResult", false);
+                jsonObject.put("transResult", true);
+                jsonObject.put("appKey", livedata_translate_pid);
+                jsonObject.put("appSecret", livedata_translate_key);
+                jsonObject.put("userId", "1234567");
+
+/*                JSONArray array = new JSONArray();
+                array.put("en");
+                array.put("es");
+                array.put("pt");
+                jsonObject.put("srcAltLanguage", array);*/
+//                jsonObject.put("srcAltLanguage", null);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            int ret  = engine.setExtensionProperty(EXTENSION_VENDOR_NAME, EXTENSION_AUDIO_FILTER_VOLUME, "startAudioTranslation", jsonObject.toString());
+            if (ret < 0){
+                showAlert("startAudioTranslation error ret:" + ret);
+                return;
+            }
+            Toast.makeText(getContext(), "开始翻译", Toast.LENGTH_SHORT).show();
+        }else if(v.getId() == R.id.stoptrans){
+            Toast.makeText(getContext(), "结束翻译", Toast.LENGTH_SHORT).show();
+            engine.setExtensionProperty(EXTENSION_VENDOR_NAME, EXTENSION_AUDIO_FILTER_VOLUME, "closeAudioTranslation", "{}");
+
+        }else if(v.getId() == R.id.startaudit){
+            JSONObject jsonObject = new JSONObject();
+            try {
+                ArrayList<String> attrs = new ArrayList<String>(){{add("1");add("2");}};
+                jsonObject.put("streamId", String.valueOf(System.currentTimeMillis()));
+                jsonObject.put("callbackUrl", livedata_callbackUrl);
+                jsonObject.put("audioLang", livedata_audit_lang);
+                jsonObject.put("appKey", livedata_audit_pid);
+                jsonObject.put("appSecret", livedata_audit_key);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            int ret = engine.setExtensionProperty(EXTENSION_VENDOR_NAME, EXTENSION_VIDEO_FILTER_WATERMARK, "startAudit", jsonObject.toString());
+            if (ret != 0){
+                showAlert("开始审核错误 " + ret);
+                return;
+            }
+            Log.i("sdktest","start json " + jsonObject.toString());
+            Toast.makeText(getContext(), "开始审核", Toast.LENGTH_LONG).show();
+        }
     }
 
     /**
@@ -481,7 +436,7 @@ public class SimpleExtension extends BaseFragment implements View.OnClickListene
         ChannelMediaOptions option = new ChannelMediaOptions();
         option.autoSubscribeAudio = true;
         option.autoSubscribeVideo = true;
-        int res = engine.joinChannel(accessToken, channelId, 0, option);
+        int res = engine.joinChannel(accessToken, channelId, (int)(System.currentTimeMillis()/1000), option);
         if (res != 0) {
             // Usually happens with invalid parameters
             // Error code description can be found at:
@@ -604,8 +559,15 @@ public class SimpleExtension extends BaseFragment implements View.OnClickListene
 
     @Override
     public void onEvent(String vendor, String extension, String key, String value) {
-        if (vendor.equals("iLiveData"))
-            addlog(value);
+        if (vendor.equals("iLiveData")) {
+            addlog(key + " " + value);
+//            if (key.equals("recognizedResult") || key.equals("translatedResult") || key.equals("recognizedTempResult")) {
+//                addlog(key + " " + value);
+//            }
+//            else {
+//                addlog(key + value);
+//            }
+        }
     }
 
 
