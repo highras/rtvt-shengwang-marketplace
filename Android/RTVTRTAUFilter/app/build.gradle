@@ -34,27 +34,8 @@ dependencies {
     // case 1: full single lib
     implementation "io.agora.rtc:full-sdk:${agora_sdk_version}"
     implementation "io.agora.rtc:full-screen-sharing:${agora_sdk_version}"
-    // case 2: partial libs
-    // implementation "io.agora.rtc:full-rtc-basic:${agora_sdk_version}"
-    // implementation "io.agora.rtc:ains:${agora_sdk_version}"
-    // implementation "io.agora.rtc:full-content-inspect:${agora_sdk_version}"
-    // implementation "io.agora.rtc:full-virtual-background:${agora_sdk_version}"
-    // implementation "io.agora.rtc:full-super-resolution:${agora_sdk_version}"
-    // implementation "io.agora.rtc:spatial-audio:${agora_sdk_version}"
-    // implementation "io.agora.rtc:audio-beauty:${agora_sdk_version}"
-    // implementation "io.agora.rtc:clear-vision:${agora_sdk_version}"
-    // implementation "io.agora.rtc:pvc:${agora_sdk_version}"
-    // implementation "io.agora.rtc:screen-capture:${agora_sdk_version}"
-    // implementation "io.agora.rtc:full-screen-sharing:${agora_sdk_version}"
-    // case 3: full single lib with voice only
-    // implementation "io.agora.rtc:voice-sdk:${agora_sdk_version}"
-    // case 4: partial libs with voice only
-    // implementation "io.agora.rtc:voice-rtc-basic:${agora_sdk_version}"
-    // implementation "io.agora.rtc:spatial-audio:${agora_sdk_version}"
-    // implementation "io.agora.rtc:audio-beauty:${agora_sdk_version}"
-
-    implementation 'androidx.appcompat:appcompat:1.1.0'
     implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
+    implementation 'androidx.appcompat:appcompat:1.2.0'
 
     // Java language implementation
     implementation "androidx.navigation:navigation-fragment:2.3.0-alpha06"

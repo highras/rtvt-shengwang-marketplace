@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
-    tools:context=".examples.advanced.SimpleExtension">
+    tools:context=".SimpleExtension">
 
     <LinearLayout
         android:id="@+id/video_container"
@@ -28,11 +28,11 @@
                 android:layout_height="match_parent"/>
 
             <ListView
-                android:transcriptMode="alwaysScroll"
                 android:id="@+id/rtvttest"
                 android:layout_width="0dp"
+                android:layout_height="wrap_content"
                 android:layout_weight="0.5"
-                android:layout_height="match_parent" />
+                android:transcriptMode="alwaysScroll" />
 
         </LinearLayout>
 
@@ -75,52 +75,50 @@
 
 
                 <androidx.appcompat.widget.AppCompatButton
+                    android:textAllCaps="false"
+                    android:textSize="14dp"
                     android:id="@+id/starttrans"
-                    android:layout_width="wrap_content"
+                    android:layout_width="150dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="4dp"
-                    android:layout_marginTop="44dp"
-                    android:text="开始翻译"
+                    android:layout_marginStart="24dp"
+                    android:layout_marginTop="32dp"
+                    android:text="StartTranslate"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/startaudit"></androidx.appcompat.widget.AppCompatButton>
 
                 <androidx.appcompat.widget.AppCompatButton
+                    android:textAllCaps="false"
                     android:id="@+id/startaudit"
-                    android:layout_width="wrap_content"
+                    android:layout_width="130dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="4dp"
-                    android:text="开始审核"
+                    android:layout_marginStart="24dp"
+                    android:layout_marginTop="16dp"
+                    android:text="StartAudit"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"></androidx.appcompat.widget.AppCompatButton>
 
                 <androidx.appcompat.widget.AppCompatButton
+                    android:textAllCaps="false"
                     android:id="@+id/closeAudit"
-                    android:layout_width="wrap_content"
+                    android:layout_width="130dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="40dp"
-                    android:text="结束审核"
+                    android:text="CloseAudit"
+                    app:layout_constraintBottom_toBottomOf="@+id/startaudit"
                     app:layout_constraintStart_toEndOf="@+id/startaudit"
-                    app:layout_constraintTop_toTopOf="parent"></androidx.appcompat.widget.AppCompatButton>
+                    app:layout_constraintTop_toTopOf="@+id/startaudit"
+                    app:layout_constraintVertical_bias="0.0"></androidx.appcompat.widget.AppCompatButton>
 
                 <androidx.appcompat.widget.AppCompatButton
-                    android:id="@+id/stopextension"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="36dp"
-                    android:layout_marginTop="36dp"
-                    android:text="结束插件"
-                    app:layout_constraintStart_toEndOf="@+id/stoptrans"
-                    app:layout_constraintTop_toBottomOf="@+id/closeAudit"></androidx.appcompat.widget.AppCompatButton>
-
-                <androidx.appcompat.widget.AppCompatButton
+                    android:textAllCaps="false"
+                    android:textSize="14dp"
                     android:id="@+id/stoptrans"
-                    android:layout_width="wrap_content"
+                    android:layout_width="150dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="44dp"
-                    android:layout_marginTop="36dp"
-                    android:text="结束翻译"
+                    android:text="StopTranslate"
+                    app:layout_constraintBottom_toBottomOf="@+id/starttrans"
                     app:layout_constraintStart_toEndOf="@+id/starttrans"
-                    app:layout_constraintTop_toBottomOf="@+id/closeAudit"></androidx.appcompat.widget.AppCompatButton>
+                    app:layout_constraintTop_toTopOf="@+id/starttrans"
+                    app:layout_constraintVertical_bias="0.0"></androidx.appcompat.widget.AppCompatButton>
             </androidx.constraintlayout.widget.ConstraintLayout>
 
 
