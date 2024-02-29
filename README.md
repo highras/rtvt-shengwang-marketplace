@@ -5,7 +5,7 @@
 
 ## 技术原理
 
-曲率识别及翻译插件是对云上曲率[实时语音识别](https://docs.ilivedata.com/asr/overview/introduction/)和[实时翻译](https://docs.ilivedata.com/alt/overview/introduction/)核心 API 的封装。通过调用[声网视频 SDK v4.0.0 Beta](https://docs.agora.io/cn/video-call-4.x-beta/product_video_ng?platform=Android) 的 [setExtensionProperty](https://docs.agora.io/cn/video-call-4.x-beta/API%20Reference/java_ng/API/class_irtcengine.html#api_setextensionproperty) 或 [setExtensionPropertyWithVendor](https://docs.agora.io/cn/video-call-4.x-beta/API%20Reference/ios_ng/API/class_irtcengine.html#api_setextensionproperty)方法，传入指定的 `key` 和 `value` 参数，你可以快速集成云上曲率的实时语音识别和翻译的能力。支持的 key 和 value 详见[插件的 key-value 列表]（https://github.com/highras/rtvt-shengwang-marketplace/blob/master/%E4%BA%91%E4%B8%8A%E6%9B%B2%E7%8E%87%E5%AE%9E%E6%97%B6%E8%AF%AD%E9%9F%B3%E8%AF%86%E5%88%AB%26%E7%BF%BB%E8%AF%91%E6%8F%92%E4%BB%B6%E6%8E%A5%E5%8F%A3%E8%AF%B4%E6%98%8E.md）。
+曲率识别及翻译插件是对云上曲率[实时语音识别](https://docs.ilivedata.com/asr/overview/introduction/)和[实时翻译](https://docs.ilivedata.com/alt/overview/introduction/)核心 API 的封装。通过调用[声网视频 SDK v4.0.0 Beta](https://docs.agora.io/cn/video-call-4.x-beta/product_video_ng?platform=Android) 的 [setExtensionProperty](https://docs.agora.io/cn/video-call-4.x-beta/API%20Reference/java_ng/API/class_irtcengine.html#api_setextensionproperty) 或 [setExtensionPropertyWithVendor](https://docs.agora.io/cn/video-call-4.x-beta/API%20Reference/ios_ng/API/class_irtcengine.html#api_setextensionproperty)方法，传入指定的 `key` 和 `value` 参数，你可以快速集成云上曲率的实时语音识别和翻译的能力。支持的 key 和 value 详见[插件的 key-value 列表](云上曲率实时语音识别&翻译插件接口说明.md)
 
 ## 前提条件
 
