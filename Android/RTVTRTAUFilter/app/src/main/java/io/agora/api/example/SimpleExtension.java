@@ -481,8 +481,8 @@ public class SimpleExtension extends AppCompatActivity implements View.OnClickLi
 //                    Log.i("sdktest", "java token is " + ApiSecurityExample.genToken(80001000,"qwerty"));
                     jsonObject.put("srclang", "zh");
                     jsonObject.put("dstLang", "en");
-                    jsonObject.put("appKey", 81700001);
-                    jsonObject.put("appSecret", "enhjdmI=");
+                    jsonObject.put("appKey", String.valueOf(livedata_translate_pid));
+                    jsonObject.put("appSecret", livedata_translate_key);
 //                    JSONArray array = new JSONArray();
 //                    array.put("en");
 //                    array.put("es");
