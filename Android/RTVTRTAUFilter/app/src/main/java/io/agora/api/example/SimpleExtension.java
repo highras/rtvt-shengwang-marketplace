@@ -1,8 +1,10 @@
 package io.agora.api.example;
 
 import static io.agora.rtc2.Constants.CLIENT_ROLE_BROADCASTER;
+import static io.agora.rtc2.Constants.REMOTE_AUDIO_STATE_STARTING;
 import static io.agora.rtc2.Constants.RENDER_MODE_HIDDEN;
 
+import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
@@ -34,6 +36,7 @@ import java.util.ArrayList;
 import io.agora.api.example.utils.CommonUtil;
 import io.agora.rtc2.ChannelMediaOptions;
 import io.agora.rtc2.Constants;
+import io.agora.rtc2.ExtensionInfo;
 import io.agora.rtc2.IRtcEngineEventHandler;
 import io.agora.rtc2.RtcEngine;
 import io.agora.rtc2.RtcEngineConfig;
@@ -52,6 +55,8 @@ public class SimpleExtension extends AppCompatActivity implements View.OnClickLi
     private Button join;
     private RtcEngine engine;
     private int myUid;
+    int remoteUid = 999;
+    String joinchannel = "";
     private boolean joined = false;
     private SeekBar record;
     ListView rtvttestview;
@@ -454,6 +459,7 @@ public class SimpleExtension extends AppCompatActivity implements View.OnClickLi
             Log.i(TAG, String.format("onJoinChannelSuccess channel %s uid %d", channel, uid));
             showShortToast(String.format("onJoinChannelSuccess channel %s uid %d", channel, uid));
             myUid = uid;
+            joinchannel = channel;
             joined = true;
             handler.post(new Runnable() {
                 @Override
@@ -466,6 +472,39 @@ public class SimpleExtension extends AppCompatActivity implements View.OnClickLi
             });
         }
 
+        @Override
+        public void onRemoteAudioStateChanged(int uid, int state, int reason, int elapsed) {
+            super.onRemoteAudioStateChanged(uid, state, reason, elapsed);
+            if (state == REMOTE_AUDIO_STATE_STARTING){
+                JSONObject jsonObject = new JSONObject();
+                try {
+//                    Log.i("sdktest", "java token is " + ApiSecurityExample.genToken(80001000,"qwerty"));
+                    jsonObject.put("srclang", "zh");
+                    jsonObject.put("dstLang", "en");
+                    jsonObject.put("appKey", String.valueOf(livedata_translate_pid));
+                    jsonObject.put("appSecret", livedata_translate_key);
+//                    JSONArray array = new JSONArray();
+//                    array.put("en");
+//                    array.put("es");
+//                    array.put("pt");
+//                    jsonObject.put("srcAltLanguage", array);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                ExtensionInfo extensionInfo = new ExtensionInfo();
+                extensionInfo.localUid = myUid;
+                extensionInfo.channelId = joinchannel;
+                extensionInfo.remoteUid = remoteUid;
+                int ret = engine.setExtensionProperty(EXTENSION_VENDOR_NAME_POST, EXTENSION_AUDIO_FILTER_POST, extensionInfo,"startAudioTranslation_post", jsonObject.toString());
+                if (ret != 0){
+                    Log.e("sdktest","开始翻译 setExtensionProperty 失败:" + ret);
+                    return;
+                }
+
+                showShortToast("开始翻译");
+                Log.i("sdktest", "startAudioTranslation ret:" + ret);
+            }
+        }
         /**Occurs when a remote user (Communication)/host (Live Broadcast) joins the channel.
          * @param uid ID of the user whose audio state changes.
          * @param elapsed Time delay (ms) from the local user calling joinChannel/setClientRole
@@ -473,7 +512,12 @@ public class SimpleExtension extends AppCompatActivity implements View.OnClickLi
         @Override
         public void onUserJoined(int uid, int elapsed) {
             super.onUserJoined(uid, elapsed);
+            remoteUid = uid;
 //            Log.i(TAG, "onUserJoined->" + uid);
+            Log.i("sdktest", "user joined!" + uid);
+
+
+            showShortToast(String.format("user %d joined!", uid));//            Log.i(TAG, "onUserJoined->" + uid);
 //            showToast(String.format("user %d joined!", uid));
 //            /**Check if the context is correct*/
 //            handler.post(() ->

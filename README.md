@@ -1,10 +1,11 @@
-# 使用云上曲率实时语音识别&翻译插件
+# 使用云上曲率实时语音识别&翻译插件（音频前+后处理）
 
 本文介绍如何在你的项目中集成和使用云上曲率实时语音识别&翻译插件（以下简称曲率识别及翻译插件），包括Android和iOS平台。
+注意：本文内容主要针对使用[声网视频 SDK v4.0.0 Beta](https://docs.agora.io/cn/video-call-4.x-beta/product_video_ng?platform=Android) 并需要进行**音频前+后处理**操作使用。如果不需要在RTC音频传输过程中，接收端对音频进行识别和翻译，请忽略本文。
 
 ## 技术原理
 
-曲率识别及翻译插件是对云上曲率[实时语音识别](https://docs.ilivedata.com/asr/overview/introduction/)和[实时翻译](https://docs.ilivedata.com/alt/overview/introduction/)核心 API 的封装。通过调用[声网视频 SDK v4.0.0 Beta](https://docs.agora.io/cn/video-call-4.x-beta/product_video_ng?platform=Android) 的 [setExtensionProperty](https://docs.agora.io/cn/video-call-4.x-beta/API%20Reference/java_ng/API/class_irtcengine.html#api_setextensionproperty) 或 [setExtensionPropertyWithVendor](https://docs.agora.io/cn/video-call-4.x-beta/API%20Reference/ios_ng/API/class_irtcengine.html#api_setextensionproperty)方法，传入指定的 `key` 和 `value` 参数，你可以快速集成云上曲率的实时语音识别和翻译的能力。支持的 key 和 value 详见[插件的 key-value 列表]（./模板-插件接口说明v1.md/#方法 key 的 value 说明）。
+曲率识别及翻译插件是对云上曲率[实时语音识别](https://docs.ilivedata.com/asr/overview/introduction/)和[实时翻译](https://docs.ilivedata.com/alt/overview/introduction/)核心 API 的封装。通过调用[声网视频 SDK v4.0.0 Beta](https://docs.agora.io/cn/video-call-4.x-beta/product_video_ng?platform=Android) 的 [setExtensionProperty](https://docs.agora.io/cn/video-call-4.x-beta/API%20Reference/java_ng/API/class_irtcengine.html#api_setextensionproperty) 或 [setExtensionPropertyWithVendor](https://docs.agora.io/cn/video-call-4.x-beta/API%20Reference/ios_ng/API/class_irtcengine.html#api_setextensionproperty)方法，传入指定的 `key` 和 `value` 参数，你可以快速集成云上曲率的实时语音识别和翻译的能力。支持的 key 和 value 详见[插件的 key-value 列表](云上曲率实时语音识别&翻译插件接口说明.md)
 
 ## 前提条件
 
@@ -12,9 +13,8 @@
   - Android Studio 4.1 以上版本。
   - 运行 Android 5.0 或以上版本的真机（非模拟器）。
 - iOS 开发环境需满足以下要求：
-  
   - Xcode 9.0 或以上版本。
-  - 运行 iOS 11.0 或以上版本的真机（非模拟器）。
+  - 运行 iOS 9.0 或以上版本的真机（非模拟器）。
 
 ## 准备工作
 
@@ -41,7 +41,7 @@
    ```java
    implementation fileTree(dir: "libs", include: ["*.jar", "*.aar"])
    ```
- 
+
 **iOS**
 
 
@@ -59,6 +59,7 @@
 ## 调用流程
 
 本节介绍插件相关接口的调用流程。接口的参数解释详见[接口说明](云上曲率实时语音识别&翻译插件接口说明.md)。
+注意：插件的使用是在接收端实现。
 
 ### 1. 启用插件
 
@@ -67,9 +68,13 @@
 
 ```java
     RtcEngineConfig config = new RtcEngineConfig();
-    config.addExtension("agora-iLiveData-filter");
+    config.addExtension("agora-iLiveData-filter-pre"); //添加前处理插件
+    config.addExtension("agora-iLiveData-filter-post"); //添加后处理插件
+
     engine = RtcEngine.create(config);
-    engine.enableExtension("iLiveData", "RTVT", true);
+    engine.enableExtension("agora-iLiveData-filter-pre", "iLiveDataPre", true); //开启前处理插件
+    engine.enableExtension("agora-iLiveData-filter-post", "iLiveDataPost", true);//开启后处理插件
+
 ```
 
 **iOS**
@@ -82,36 +87,54 @@
    config.eventDelegate = self;
    self.agoraKit = [AgoraRtcEngineKit sharedEngineWithConfig:config
                                                     delegate:self];
-   // 开启插件
-   [self.kit enableExtensionWithVendor:[iLiveDataSimpleFilterManager companyName]
-                             extension:[iLiveDataSimpleFilterManager plugName]
-                             enabled:YES]；
+   // 开启后处理插件
+   [self.kit enableExtensionWithVendor:[iLiveDataSimpleFilterManager_post companyName]
+                             extension:[iLiveDataSimpleFilterManager_post rtvt_post_plugName]
+                             enabled:YES];
+   //开启前处理插件
+   [self.kit enableExtensionWithVendor:[iLiveDataSimpleFilterManager_pre companyName]
+                             extension:[iLiveDataSimpleFilterManager_pre rtvt_pre_plugName] enabled:YES];
+
 ```
 
 
 ### 2. 使用插件
+在使用插件时，除了在音频前处理的使用方法中一些必填参数以外，还需要由业务侧自行在`AgoraExtensionInfo`方法中填入`remoteUid`（远端用户ID，即音频发送端ID）、`channelId`（音频通话频道ID）和`localUid`（本端用户ID，即音频接收端ID），用于音频后处理的需要。
 
 **Android**
-调用`setExtensionProperty` 指定 key 为 `startAudioTranslation` 在value中以json格式传入`appkey` `appsecret`等参数
+
+调用`setExtensionProperty` 指定 key 为 `startAudioTranslation`(后处理) 、 `startAudioTranslation_pre`(前处理)，并在value中以json格式传入`appkey` `appsecret`等参数。
+
 
 ```java
     JSONObject jsonObject = new JSONObject();
-    jsonObject.put("appKey", 1234567);
-    jsonObject.put("appSecret", "xxxxx");
+    jsonObject.put("appKey", "");
+    jsonObject.put("appSecret", "");
     jsonObject.put("srclang", "zh");
     jsonObject.put("dstLang", "en");
 ```
 
 
 ```java
-    engine.setExtensionProperty(EXTENSION_VENDOR_NAME, EXTENSION_AUDIO_FILTER_VOLUME, "startAudioTranslation", jsonObject.toString());
+    ExtensionInfo extensionInfo = new ExtensionInfo();
+    extensionInfo.localUid = ;
+    extensionInfo.channelId = ;
+    extensionInfo.remoteUid = ;
+```
+- 后处理
+```java
+    engine.setExtensionProperty("iLiveDataPost", "RTVT_POST", extensionInfo, "startAudioTranslation_post", jsonObject.toString());
+```
+- 前处理
+```java
+    engine.setExtensionProperty("iLiveDataPre", "RTVT_PRE", "startAudioTranslation_pre", jsonObject.toString());
 ```
 
 
-
 **iOS**
-调用`setExtensionPropertyWithVendor`，指定 key 为 `startAudioTranslation` 并在 value 中传入 `appKey` 和 `appSecret` 等参数。
+调用`setExtensionPropertyWithVendor`，指定 key 为 `startAudioTranslation_post`(后处理) 、 `startAudioTranslation_pre`(前处理)，并在 value 中传入 `appKey` 和 `appSecret` 等参数。
 
+- 后处理
 ```objective-c
     NSDictionary * startDic = @{
                                 //传入appkey
@@ -127,97 +150,145 @@
     NSString * jsonStr = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
 ```
 
+```objective-c
+-(BOOL)_setProperty:(NSString*)key value:(NSString*)value type:(int)type{
+
+    AgoraExtensionInfo * info = [[AgoraExtensionInfo alloc] init];
+    info.remoteUid = ;
+    info.channelId = ;
+    info.localUid = ;
+
+    return [self.kit setExtensionPropertyWithVendor:[iLiveDataSimpleFilterManager_post companyName]
+                                   extension:[iLiveDataSimpleFilterManager_post plugName]
+                               extensionInfo:info
+                                         key:"startAudioTranslation_post"
+                                       value:value];
+}
+```
+>注意：
+>1. 调用使用插件接口时，需要保证channel中至少有2人在才可以调用，否则调用失败，插件无法使用。
+>2. 进入channel后，插件会触发房间人员进入事件监听，并自动使用插件。如果不需要自动使用插件，请开发者自行进行设置。
+
+- 前处理
+```objective-c
+  NSDictionary * startDic = @{
+                            //传入appkey
+                            @"appKey":<YOUR_APP_KEY>,
+                            //传入appsecret
+                            @"appSecret":<YOUR_APP_SECRET>,
+                            //传入源语言
+                            @"srcLanguage":@"zh",
+                            //传入目标语言
+                            @"destLanguage":@"en"
+                            };
+  NSData *jsonData = [NSJSONSerialization dataWithJSONObject:startDic options:NSJSONWritingPrettyPrinted error:nil];
+  NSString * jsonStr = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+```
 
 ```objective-c
-    [self.kit setExtensionPropertyWithVendor:[iLiveDataSimpleFilterManager companyName]
-                                   extension:[iLiveDataSimpleFilterManager plugName]
-                                         key:"startAudioTranslation"
+[self.kit setExtensionPropertyWithVendor:[iLiveDataSimpleFilterManager_pre companyName]
+                                   extension:[iLiveDataSimpleFilterManager_pre plugName]
+                                         key:"startAudioTranslation_pre"
                                        value:jsonStr];
 ```
+
 
 
 ### 3. 结束使用插件
 
 **Android**
-调用 `setExtensionProperty`方法并指定 key 为 `closeAudioTranslation` 来结束曲率识别和翻译插件的使用。
-
+调用 `setExtensionProperty`方法并指定 key 为 `closeAudioTranslation_post`(后处理)、`closeAudioTranslation_pre`(前处理)， 来结束曲率识别和翻译插件的使用。
+- 后处理
 ```java
-    engine.setExtensionProperty(EXTENSION_VENDOR_NAME, EXTENSION_AUDIO_FILTER_VOLUME, "closeAudioTranslation", "{}");
+    engine.setExtensionProperty("iLiveDataPost", "RTVT_POST", "closeAudioTranslation_post", "{}");
+```
+- 前处理
+```java
+    engine.setExtensionProperty("iLiveDataPre", "RTVT_PRE", "closeAudioTranslation_pre", "{}");
 ```
 
-
 **iOS**
-调用 `setExtensionPropertyWithVendor`方法并指定 key 为 `closeAudioTranslation` 来结束曲率识别和翻译插件的使用。
+调用 `setExtensionPropertyWithVendor`方法并指定 key 为 `closeAudioTranslation_post`(后处理)、`closeAudioTranslation_pre`(前处理)， 来结束曲率识别和翻译插件的使用。
 
+- 后处理
 ```objective-c
-    [self.kit setExtensionPropertyWithVendor:[iLiveDataSimpleFilterManager companyName]
-                                   extension:[iLiveDataSimpleFilterManager plugName]
-                                         key:"closeAudioTranslation"
+    [self.kit setExtensionPropertyWithVendor:[iLiveDataSimpleFilterManager_post companyName]
+                                   extension:[iLiveDataSimpleFilterManager_post plugName]
+                                         key:"closeAudioTranslation_post"
                                        value:"end"];
 ```
 
+> 注意：有以下两种情况需要开发者关注：
+> 1. P2P通话时，如果某方出现断线情况，那么在重连成功后，需要开发者主动调用使用插件
+> 2. P2P通话时，如果某方离开频道，那么另一方在监听到离开事件后，自动结束使用插件。如果此时再进入到其他房间，需要开发者主动调用使用插件。
+
+- 前处理
+```objective-c
+[self.kit setExtensionPropertyWithVendor:[iLiveDataSimpleFilterManager_pre companyName]
+                               extension:[iLiveDataSimpleFilterManager_pre plugName]
+                                     key:"closeAudioTranslation_pre"
+                                   value:"end"];
+```
 
 
 ### 4. 识别和翻译结果回调
 
 **Android**
 初始化成功后，曲率识别及翻译插件会通过 `onEvent` 回调返回识别结果。识别结果的含义详见 `onEvent` 回调。
-
+- 后处理
 ```java
 @Override
 public void onEvent(String vendor, String extension, String key, String value) {
-    key: "recognizeResult" 识别结果  
-    value: json结构
-          {
-              ""result", 识别结果
-              "startTs", 开始时间戳
-              "endTs",结束时间戳
-          }
-          ~~ 
-    和 "translateResult" 翻译结果
-    value: json结构
-          {
-              ""result", 翻译结果
-              "startTs", 开始时间戳
-              "endTs",结束时间戳
-          }
+  vendor:"iLiveData"
+    key: "recognizeResult"识别结果标识  "translateResult"翻译结果标识
+    extension: "RTVT_POST"
+      value: 对应key分别为 识别结果 和 翻译结果
+}
+```
+
+- 前处理
+```java
+@Override
+public void onEvent(String vendor, String extension, String key, String value) {
+  vendor:"iLiveData"
+    key: "recognizeResult"识别结果标识  "translateResult"翻译结果标识
+    extension: "RTVT_PRE"
+      value: 对应key分别为 识别结果 和 翻译结果
 }
 ```
 
 **iOS**
 初始化成功后，曲率识别及翻译插件会通过 `onEvent` 回调返回识别结果。识别结果的含义详见 onEvent 回调。
 
-
+- 后处理
 ```objective-c
 -(void)onEvent:(NSString *)provider extension:(NSString *)extension key:(NSString *)key value:(NSString *)value{
 
-       provider:"iLiveData"
-      extension:"RTVT"
-      key: "recognizeResult" 识别结果  
-      value: json结构
-            {
-                ""result", 识别结果
-                "startTs", 开始时间戳
-                "endTs",结束时间戳
-            }
-            ~~ 
-      和 "translateResult" 翻译结果
-      value: json结构
-            {
-                ""result", 翻译结果
-                "startTs", 开始时间戳
-                "endTs",结束时间戳
-            }
+       provider:"iLiveDataSimpleFilterManager_post"
+      extension:"rtvt_post_plugName"
+            key: "recognizeResult"识别结果标识  "translateResult"翻译结果标识
+          value: 对应key分别为 识别结果 和 翻译结果
+
 }
 ```
+- 前处理
+```objective-c
+-(void)onEvent:(NSString *)provider extension:(NSString *)extension key:(NSString *)key value:(NSString *)value{
 
+       provider:"iLiveDataSimpleFilterManager_pre"
+      extension:"rtvt_pre_plugName"
+            key: "recognizeResult"识别结果标识  "translateResult"翻译结果标识
+          value: 对应key分别为 识别结果 和 翻译结果
+
+}
+```
 
 ## 示例项目
 
 | 平台    | 语言        | 示例项目                                                     |
 | :------ | :---------- | :----------------------------------------------------------- |
-| Android | Java        | [项目示例](https://github.com/highras/rtvt-agora-marketplace) |
-| iOS     | Objective-C | [项目示例](https://github.com/highras/rtvt-agora-marketplace) |
+| Android | Java        | [项目示例](https://github.com/highras/rtvt-shengwang-marketplace) |
+| iOS     | Objective-C | [项目示例](https://github.com/highras/rtvt-shengwang-marketplace) |
 
 ### 运行步骤
 
@@ -225,7 +296,7 @@ public void onEvent(String vendor, String extension, String key, String value) {
 
 1. 克隆仓库：
   ```shell
-	git clone (https://github.com/highras/rtvt-agora-marketplace)
+	git clone (https://github.com/highras/rtvt-shengwang-marketplace)
   ```
 2. 将项目的\app\src\main\res\values\string_configs.xml 文件中的"agora_app_id" 和"agora_access_token"替换成你自己声网的appid和apptoken 获取 App ID 请参考[开始使用 Agora 平台](https://docs.agora.io/cn/Agora%20Platform/get_appid_token?platform=All%20Platforms); 将"livedata_translate_pid" 和 "livedata_translate_key"替换成云上曲率项目id和key  获取方式详见[购买和激活插件](https://docs.agora.io/cn/extension_customer/get_extension?platform=All%20Platforms)。
 3. 连接一台 Android 真机（非模拟器），运行项目。 输入频道号  点击“加入频道” 加入成功后 点击"开始翻译" 界面可以看见翻译结果
