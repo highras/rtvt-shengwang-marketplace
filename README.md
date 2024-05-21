@@ -69,11 +69,11 @@
 ```java
     RtcEngineConfig config = new RtcEngineConfig();
     config.addExtension("agora-iLiveData-filter-pre"); //添加前处理插件
-    config.addExtension("agora-iLiveData-filter-post"); //添加后处理插件
+    config.addExtension("agora-iLiveData-filter-post"); //添加后处理插件(翻译远端用户)
 
     engine = RtcEngine.create(config);
-    engine.enableExtension("agora-iLiveData-filter-pre", "iLiveDataPre", true); //开启前处理插件
-    engine.enableExtension("agora-iLiveData-filter-post", "iLiveDataPost", true);//开启后处理插件
+    engine.enableExtension("iLiveDataPre", "RTVT_PRE", true); //开启前处理插件
+    engine.enableExtension("iLiveDataPre", "RTVT_POST", true);//开启后处理插件
 
 ```
 
@@ -103,14 +103,14 @@
 
 **Android**
 
-调用`setExtensionProperty` 指定 key 为 `startAudioTranslation`(后处理) 、 `startAudioTranslation_pre`(前处理)，并在value中以json格式传入`appkey` `appsecret`等参数。
+调用`setExtensionProperty` 指定 key 为 `startAudioTranslation_post`(后处理) 、 `startAudioTranslation_pre`(前处理)，并在value中以json格式传入`appkey` `appsecret`等参数。
 
 
 ```java
     JSONObject jsonObject = new JSONObject();
     jsonObject.put("appKey", "");
     jsonObject.put("appSecret", "");
-    jsonObject.put("srclang", "zh");
+    jsonObject.put("srcLang", "zh");
     jsonObject.put("dstLang", "en");
 ```
 

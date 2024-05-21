@@ -50,11 +50,13 @@ public class SimpleExtension extends AppCompatActivity implements View.OnClickLi
     public static final String EXTENSION_VENDOR_NAME_POST = "iLiveDataPost";
     public static final String EXTENSION_AUDIO_FILTER_POST = "RTVT_POST";
     public static final String EXTENSION_AUDIO_FILTER_PRE = "RTVT_PRE";
+    public static final String EXTENSION_VIDEO_FILTER_PRE = "RTAU_PRE";
+
     private FrameLayout local_view;
     private EditText et_channel;
     private Button join;
     private RtcEngine engine;
-    private int myUid;
+    private int myUid = 789;
     int remoteUid = 999;
     String joinchannel = "";
     private boolean joined = false;
@@ -179,6 +181,13 @@ public class SimpleExtension extends AppCompatActivity implements View.OnClickLi
                 showAlert("enableExtension error:" +ret + " " + EXTENSION_AUDIO_FILTER_PRE );
                 return;
             }
+            ret = engine.enableExtension(EXTENSION_VENDOR_NAME_PRE, EXTENSION_VIDEO_FILTER_PRE, true);
+            if (ret <0){
+                showAlert("enableExtension error:" +ret + " " + EXTENSION_VIDEO_FILTER_PRE );
+                return;
+            }
+
+
             ret = engine.enableExtension(EXTENSION_VENDOR_NAME_POST, EXTENSION_AUDIO_FILTER_POST, true);
             if (ret <0){
                 showAlert("enableExtension error:" +ret + " " + EXTENSION_AUDIO_FILTER_POST );
@@ -254,13 +263,15 @@ public class SimpleExtension extends AppCompatActivity implements View.OnClickLi
         if(v.getId() == R.id.starttrans){
             JSONObject jsonObject = new JSONObject();
             try {
-                jsonObject.put("srclang", livedata_translate_srclang);
+                jsonObject.put("srcLang", livedata_translate_srclang);
                 jsonObject.put("dstLang", livedata_translate_dstlang);
                 jsonObject.put("asrResult", true);
                 jsonObject.put("transResult", true);
                 jsonObject.put("appKey", livedata_translate_pid);
                 jsonObject.put("appSecret", livedata_translate_key);
-                jsonObject.put("userId", "1234567");
+                jsonObject.put("userId", 123456);
+
+//                jsonObject.put("userId", "1234567");
 
 /*                JSONArray array = new JSONArray();
                 array.put("en");
@@ -272,6 +283,7 @@ public class SimpleExtension extends AppCompatActivity implements View.OnClickLi
                 e.printStackTrace();
             }
             int ret  = engine.setExtensionProperty(EXTENSION_VENDOR_NAME_PRE, EXTENSION_AUDIO_FILTER_PRE, "startAudioTranslation_pre", jsonObject.toString());
+//            int ret  = engine.setExtensionProperty(EXTENSION_VENDOR_NAME_PRE, EXTENSION_AUDIO_FILTER_PRE, "startAudioTranslation_pre", "{\"srclang\":\"zh\",\"dstLang\":\"en\",\"appKey\":81700088,\"appSecret\":\"ZDUwNDEyYzAtNzY1ZS00NjYzLTkzYTAtYmY0ZDVmNDdhNWJj\",\"userId\":765270600}");
             if (ret < 0){
                 showAlert("startAudioTranslation error ret:" + ret);
                 return;
@@ -279,11 +291,10 @@ public class SimpleExtension extends AppCompatActivity implements View.OnClickLi
             showShortToast("开始翻译");
         }else if(v.getId() == R.id.stoptrans){
             showShortToast("结束翻译");
-            engine.setExtensionProperty(EXTENSION_VENDOR_NAME_PRE, EXTENSION_NAME_PRE, "closeAudioTranslation_pre", "{}");
+            engine.setExtensionProperty(EXTENSION_VENDOR_NAME_PRE, EXTENSION_AUDIO_FILTER_PRE, "closeAudioTranslation_pre", "{}");
 
         }
         else if (v.getId() == R.id.startaudit){
-/*
             String spid  = getString(R.string.livedata_audit_pid);
             if (spid.isEmpty()){
                 showAlert("Please configure the project ID for audit");
@@ -308,13 +319,13 @@ public class SimpleExtension extends AppCompatActivity implements View.OnClickLi
                 e.printStackTrace();
             }
 
-            int ret = engine.setExtensionProperty(EXTENSION_VENDOR_NAME, EXTENSION_VIDEO_FILTER_WATERMARK, "startAudit", jsonObject.toString());
+            int ret = engine.setExtensionProperty(EXTENSION_VENDOR_NAME_PRE, EXTENSION_VIDEO_FILTER_PRE, "startAudit_pre", jsonObject.toString());
             if (ret != 0 ){
                 showAlert("setExtensionProperty startAudit error " + ret);
                 return;
             }
             Toast.makeText(this, "Start Audit", Toast.LENGTH_SHORT).show();
-            Log.i("sdktest","Start Audit " + ret);*/
+            Log.i("sdktest","Start Audit " + ret);
         }
         else if (v.getId() == R.id.closeAudit){
 /*            Toast.makeText(this, "End Audit", Toast.LENGTH_SHORT).show();
@@ -476,6 +487,7 @@ public class SimpleExtension extends AppCompatActivity implements View.OnClickLi
         public void onRemoteAudioStateChanged(int uid, int state, int reason, int elapsed) {
             super.onRemoteAudioStateChanged(uid, state, reason, elapsed);
             if (state == REMOTE_AUDIO_STATE_STARTING){
+
                 JSONObject jsonObject = new JSONObject();
                 try {
 //                    Log.i("sdktest", "java token is " + ApiSecurityExample.genToken(80001000,"qwerty"));
@@ -495,6 +507,7 @@ public class SimpleExtension extends AppCompatActivity implements View.OnClickLi
                 extensionInfo.localUid = myUid;
                 extensionInfo.channelId = joinchannel;
                 extensionInfo.remoteUid = remoteUid;
+
                 int ret = engine.setExtensionProperty(EXTENSION_VENDOR_NAME_POST, EXTENSION_AUDIO_FILTER_POST, extensionInfo,"startAudioTranslation_post", jsonObject.toString());
                 if (ret != 0){
                     Log.e("sdktest","开始翻译 setExtensionProperty 失败:" + ret);
