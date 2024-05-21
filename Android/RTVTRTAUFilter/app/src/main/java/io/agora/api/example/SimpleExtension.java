@@ -288,9 +288,9 @@ public class SimpleExtension extends AppCompatActivity implements View.OnClickLi
                 showAlert("startAudioTranslation error ret:" + ret);
                 return;
             }
-            showShortToast("开始翻译");
+            showShortToast("Start Translation");
         }else if(v.getId() == R.id.stoptrans){
-            showShortToast("结束翻译");
+            showShortToast("End Translation");
             engine.setExtensionProperty(EXTENSION_VENDOR_NAME_PRE, EXTENSION_AUDIO_FILTER_PRE, "closeAudioTranslation_pre", "{}");
 
         }
@@ -510,11 +510,11 @@ public class SimpleExtension extends AppCompatActivity implements View.OnClickLi
 
                 int ret = engine.setExtensionProperty(EXTENSION_VENDOR_NAME_POST, EXTENSION_AUDIO_FILTER_POST, extensionInfo,"startAudioTranslation_post", jsonObject.toString());
                 if (ret != 0){
-                    Log.e("sdktest","开始翻译 setExtensionProperty 失败:" + ret);
+                    Log.e("sdktest","strart remote translation setExtensionProperty failed:" + ret);
                     return;
                 }
 
-                showShortToast("开始翻译");
+                showShortToast("Start Translation");
                 Log.i("sdktest", "startAudioTranslation ret:" + ret);
             }
         }
