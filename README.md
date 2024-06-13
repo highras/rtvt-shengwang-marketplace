@@ -88,12 +88,13 @@
    self.agoraKit = [AgoraRtcEngineKit sharedEngineWithConfig:config
                                                     delegate:self];
    // 开启后处理插件
-   [self.kit enableExtensionWithVendor:[iLiveDataSimpleFilterManager_post companyName]
-                             extension:[iLiveDataSimpleFilterManager_post rtvt_post_plugName]
+   [self.kit enableExtensionWithVendor:[iLiveDataPost]
+                             extension:[RTVT_POST]
                              enabled:YES];
    //开启前处理插件
-   [self.kit enableExtensionWithVendor:[iLiveDataSimpleFilterManager_pre companyName]
-                             extension:[iLiveDataSimpleFilterManager_pre rtvt_pre_plugName] enabled:YES];
+   [self.kit enableExtensionWithVendor:[iLiveDataPre]
+                             extension:[RTVT_PRE]
+                             enabled:YES];
 
 ```
 
@@ -167,8 +168,8 @@
     info.channelId = ;
     info.localUid = ;
 
-    return [self.kit setExtensionPropertyWithVendor:[iLiveDataSimpleFilterManager_post companyName]
-                                   extension:[iLiveDataSimpleFilterManager_post plugName]
+    return [self.kit setExtensionPropertyWithVendor:[iLiveDataPost]
+                                   extension:[RTVT_POST]
                                extensionInfo:info
                                          key:"startAudioTranslation_post"
                                        value:value];
@@ -199,8 +200,8 @@
 ```
 
 ```objective-c
-[self.kit setExtensionPropertyWithVendor:[iLiveDataSimpleFilterManager_pre companyName]
-                                   extension:[iLiveDataSimpleFilterManager_pre plugName]
+[self.kit setExtensionPropertyWithVendor:[iLiveDataPre]
+                                   extension:[RTVT_PRE]
                                          key:"startAudioTranslation_pre"
                                        value:jsonStr];
 ```
@@ -228,8 +229,8 @@
 
 - 后处理
 ```objective-c
-    [self.kit setExtensionPropertyWithVendor:[iLiveDataSimpleFilterManager_post companyName]
-                                   extension:[iLiveDataSimpleFilterManager_post plugName]
+    [self.kit setExtensionPropertyWithVendor:[iLiveDataPost]
+                                   extension:[RTVT_POST]
                                          key:"closeAudioTranslation_post"
                                        value:"end"];
 ```
@@ -238,8 +239,8 @@
 
 - 前处理
 ```objective-c
-[self.kit setExtensionPropertyWithVendor:[iLiveDataSimpleFilterManager_pre companyName]
-                               extension:[iLiveDataSimpleFilterManager_pre plugName]
+[self.kit setExtensionPropertyWithVendor:[iLiveDataPre]
+                               extension:[RTVT_PRE ]
                                      key:"closeAudioTranslation_pre"
                                    value:"end"];
 ```
@@ -280,8 +281,8 @@ public void onEvent(String vendor, String extension, String key, String value) {
 ```objective-c
 -(void)onEvent:(NSString *)provider extension:(NSString *)extension key:(NSString *)key value:(NSString *)value{
 
-       provider:"iLiveDataSimpleFilterManager_post"
-      extension:"rtvt_post_plugName"
+       provider:"iLiveDataPost"
+      extension:"RTVT_POST"
             key: "recognizeResult"识别结果标识  "translateResult"翻译结果标识   "recognizedTempResult"临时识别结果标识 "translatedTempResult"临时翻译结果标识 
           value: 对应key分别为 识别结果 和 翻译结果  和 临时识别结果 和 临时翻译结果
 
@@ -291,8 +292,8 @@ public void onEvent(String vendor, String extension, String key, String value) {
 ```objective-c
 -(void)onEvent:(NSString *)provider extension:(NSString *)extension key:(NSString *)key value:(NSString *)value{
 
-       provider:"iLiveDataSimpleFilterManager_pre"
-      extension:"rtvt_pre_plugName"
+       provider:"iLiveDataPre"
+      extension:"RTVT_PRE"
             key: "recognizeResult"识别结果标识  "translateResult"翻译结果标识   "recognizedTempResult"临时识别结果标识 "translatedTempResult"临时翻译结果标识 
           value: 对应key分别为 识别结果 和 翻译结果  和 临时识别结果 和 临时翻译结果
 
