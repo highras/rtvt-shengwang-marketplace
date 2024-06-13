@@ -36,7 +36,6 @@
     
     dispatch_async(dispatch_get_main_queue(), ^{
         
-        
         self.agora_appId = @"";
         self.agora_RoomId = @"";
         self.agora_myUid = arc4random() % 999999999;
@@ -101,11 +100,12 @@
                                     @"srcLanguage":@"zh",
                                     @"destLanguage":@"en",
                                     @"srcAltLanguage":@[],
+                                    @"tempResult":@(NO),
                                     
                                     
                                     // @"asrResult":@(YES),      Recognition result switch  The default YES is not passed
                                     // @"transResult":@(YES),    Translation result switch  The default YES is not passed
-                                    // @"asrTempResult":@(NO),  Recognition tmp result switch  The default NO is not passed
+                                    // @"tempResult":@(NO),  Recognition + Translation tmp result switch  The default NO is not passed
                                     
     };
     
@@ -246,7 +246,7 @@
     NSDictionary *dic = [NSJSONSerialization JSONObjectWithData:jsonData
                                                         options:NSJSONReadingMutableContainers error:&error2];
     if(error2 == nil){
-//        NSLog(@"dic %@ %lld",dic,[[dic objectForKey:@"startTs"] longLongValue]);
+       NSLog(@"onEvent ----- %@ ----- %@ ----- %@ ",key,extension,dic);
     }
     
     
