@@ -112,9 +112,9 @@
     jsonObject.put("appSecret", "");
     jsonObject.put("srcLang", "zh");
     jsonObject.put("dstLang", "en");
-    jsonObject.put("asrResult", "YES");
-    jsonObject.put("transResult", "YES");
-    jsonObject.put("tempResult", "NO");
+    jsonObject.addProperty("asrResult", true);
+    jsonObject.addProperty("transResult", true);
+    jsonObject.addProperty("tempResult", false);
 ```
 
 
@@ -256,9 +256,9 @@
 @Override
 public void onEvent(String vendor, String extension, String key, String value) {
   vendor:"iLiveData"
-    key: "recognizeResult"识别结果标识  "translateResult"翻译结果标识  "tempResult"临时结果标识
+    key: "recognizeResult"识别结果标识  "translateResult"翻译结果标识  "recognizedTempResult"临时识别结果标识 "translatedTempResult"临时翻译结果标识 
     extension: "RTVT_POST"
-      value: 对应key分别为 识别结果 和 翻译结果 和 临时结果
+      value: 对应key分别为 识别结果 和 翻译结果 和 临时识别结果 和 临时翻译结果
 }
 ```
 
@@ -267,9 +267,9 @@ public void onEvent(String vendor, String extension, String key, String value) {
 @Override
 public void onEvent(String vendor, String extension, String key, String value) {
   vendor:"iLiveData"
-    key: "recognizeResult"识别结果标识  "translateResult"翻译结果标识  "tempResult"临时结果标识
+    key: "recognizeResult"识别结果标识  "translateResult"翻译结果标识   "recognizedTempResult"临时识别结果标识 "translatedTempResult"临时翻译结果标识 
     extension: "RTVT_PRE"
-      value: 对应key分别为 识别结果 和 翻译结果 和 临时结果
+      value: 对应key分别为 识别结果 和 翻译结果  和 临时识别结果 和 临时翻译结果
 }
 ```
 
@@ -282,8 +282,8 @@ public void onEvent(String vendor, String extension, String key, String value) {
 
        provider:"iLiveDataSimpleFilterManager_post"
       extension:"rtvt_post_plugName"
-            key: "recognizeResult"识别结果标识  "translateResult"翻译结果标识  "tempResult"临时结果标识
-          value: 对应key分别为 识别结果 和 翻译结果 和 临时结果
+            key: "recognizeResult"识别结果标识  "translateResult"翻译结果标识   "recognizedTempResult"临时识别结果标识 "translatedTempResult"临时翻译结果标识 
+          value: 对应key分别为 识别结果 和 翻译结果  和 临时识别结果 和 临时翻译结果
 
 }
 ```
@@ -293,8 +293,8 @@ public void onEvent(String vendor, String extension, String key, String value) {
 
        provider:"iLiveDataSimpleFilterManager_pre"
       extension:"rtvt_pre_plugName"
-            key: "recognizeResult"识别结果标识  "translateResult"翻译结果标识  "tempResult"临时结果标识
-          value: 对应key分别为 识别结果 和 翻译结果 和 临时结果
+            key: "recognizeResult"识别结果标识  "translateResult"翻译结果标识   "recognizedTempResult"临时识别结果标识 "translatedTempResult"临时翻译结果标识 
+          value: 对应key分别为 识别结果 和 翻译结果  和 临时识别结果 和 临时翻译结果
 
 }
 ```
