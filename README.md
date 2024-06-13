@@ -112,6 +112,9 @@
     jsonObject.put("appSecret", "");
     jsonObject.put("srcLang", "zh");
     jsonObject.put("dstLang", "en");
+    jsonObject.put("asrResult", "YES");
+    jsonObject.put("transResult", "YES");
+    jsonObject.put("tempResult", "NO");
 ```
 
 
@@ -144,7 +147,13 @@
                                 //传入源语言
                                 @"srcLanguage":@"zh",
                                 //传入目标语言
-                                @"destLanguage":@"en"
+                                @"destLanguage":@"en",
+                                //设置识别结果
+                                @"asrResult":@(YES),
+                                //设置翻译结果
+                                @"transResult":@(YES),
+                                //设置临时结果
+                                @"tempResult":@(NO),
                                 };
     NSData *jsonData = [NSJSONSerialization dataWithJSONObject:startDic options:NSJSONWritingPrettyPrinted error:nil];
     NSString * jsonStr = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
@@ -165,9 +174,7 @@
                                        value:value];
 }
 ```
->注意：
->1. 调用使用插件接口时，需要保证channel中至少有2人在才可以调用，否则调用失败，插件无法使用。
->2. 进入channel后，插件会触发房间人员进入事件监听，并自动使用插件。如果不需要自动使用插件，请开发者自行进行设置。
+
 
 - 前处理
 ```objective-c
@@ -179,7 +186,13 @@
                             //传入源语言
                             @"srcLanguage":@"zh",
                             //传入目标语言
-                            @"destLanguage":@"en"
+                            @"destLanguage":@"en",
+                            //设置识别结果
+                            @"asrResult":@(YES),
+                            //设置翻译结果
+                            @"transResult":@(YES),
+                            //设置临时结果
+                            @"tempResult":@(NO),
                             };
   NSData *jsonData = [NSJSONSerialization dataWithJSONObject:startDic options:NSJSONWritingPrettyPrinted error:nil];
   NSString * jsonStr = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
@@ -191,7 +204,10 @@
                                          key:"startAudioTranslation_pre"
                                        value:jsonStr];
 ```
-
+>注意：
+>1. 调用使用插件接口时，需要保证channel中至少有2人在才可以调用，否则调用失败，插件无法使用。
+>2. 进入channel后，插件会触发房间人员进入事件监听，并自动使用插件。如果不需要自动使用插件，请开发者自行进行设置。
+>3. 如果需要回调临时结果，需要设置`tempResult`为YES，默认为NO。默认识别结果和翻译结果的回调都为YES，如果又不需要，请设置为NO。
 
 
 ### 3. 结束使用插件
@@ -218,9 +234,7 @@
                                        value:"end"];
 ```
 
-> 注意：有以下两种情况需要开发者关注：
-> 1. P2P通话时，如果某方出现断线情况，那么在重连成功后，需要开发者主动调用使用插件
-> 2. P2P通话时，如果某方离开频道，那么另一方在监听到离开事件后，自动结束使用插件。如果此时再进入到其他房间，需要开发者主动调用使用插件。
+
 
 - 前处理
 ```objective-c
@@ -229,7 +243,9 @@
                                      key:"closeAudioTranslation_pre"
                                    value:"end"];
 ```
-
+> 注意：有以下两种情况需要开发者关注：
+> 1. P2P通话时，如果某方出现断线情况，那么在重连成功后，需要开发者主动调用使用插件
+> 2. P2P通话时，如果某方离开频道，那么另一方在监听到离开事件后，自动结束使用插件。如果此时再进入到其他房间，需要开发者主动调用使用插件。
 
 ### 4. 识别和翻译结果回调
 
@@ -240,9 +256,9 @@
 @Override
 public void onEvent(String vendor, String extension, String key, String value) {
   vendor:"iLiveData"
-    key: "recognizeResult"识别结果标识  "translateResult"翻译结果标识
+    key: "recognizeResult"识别结果标识  "translateResult"翻译结果标识  "tempResult"临时结果标识
     extension: "RTVT_POST"
-      value: 对应key分别为 识别结果 和 翻译结果
+      value: 对应key分别为 识别结果 和 翻译结果 和 临时结果
 }
 ```
 
@@ -251,9 +267,9 @@ public void onEvent(String vendor, String extension, String key, String value) {
 @Override
 public void onEvent(String vendor, String extension, String key, String value) {
   vendor:"iLiveData"
-    key: "recognizeResult"识别结果标识  "translateResult"翻译结果标识
+    key: "recognizeResult"识别结果标识  "translateResult"翻译结果标识  "tempResult"临时结果标识
     extension: "RTVT_PRE"
-      value: 对应key分别为 识别结果 和 翻译结果
+      value: 对应key分别为 识别结果 和 翻译结果 和 临时结果
 }
 ```
 
@@ -266,8 +282,8 @@ public void onEvent(String vendor, String extension, String key, String value) {
 
        provider:"iLiveDataSimpleFilterManager_post"
       extension:"rtvt_post_plugName"
-            key: "recognizeResult"识别结果标识  "translateResult"翻译结果标识
-          value: 对应key分别为 识别结果 和 翻译结果
+            key: "recognizeResult"识别结果标识  "translateResult"翻译结果标识  "tempResult"临时结果标识
+          value: 对应key分别为 识别结果 和 翻译结果 和 临时结果
 
 }
 ```
@@ -277,8 +293,8 @@ public void onEvent(String vendor, String extension, String key, String value) {
 
        provider:"iLiveDataSimpleFilterManager_pre"
       extension:"rtvt_pre_plugName"
-            key: "recognizeResult"识别结果标识  "translateResult"翻译结果标识
-          value: 对应key分别为 识别结果 和 翻译结果
+            key: "recognizeResult"识别结果标识  "translateResult"翻译结果标识  "tempResult"临时结果标识
+          value: 对应key分别为 识别结果 和 翻译结果 和 临时结果
 
 }
 ```
