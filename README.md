@@ -64,16 +64,19 @@
 ### 1. 启用插件
 
 **Android**
-初始化声网 `AgoraRtcEngine` 时，调用 `enableExtension` 启用插件。
+初始化声网 `AgoraRtcEngine` 时，调用 `enableExtension` 启用插件。<br>
+<font color=gray>
+    tips:如果so库确定存在 调用addExtension返回-3 请尝试使用系统System.loadLibrary加载动态库</font>
 
 ```java
     RtcEngineConfig config = new RtcEngineConfig();
     config.addExtension("agora-iLiveData-filter-pre"); //添加前处理插件
     config.addExtension("agora-iLiveData-filter-post"); //添加后处理插件(翻译远端用户)
 
+  
     engine = RtcEngine.create(config);
     engine.enableExtension("iLiveDataPre", "RTVT_PRE", true); //开启前处理插件
-    engine.enableExtension("iLiveDataPre", "RTVT_POST", true);//开启后处理插件
+    engine.enableExtension("iLiveDataPost", "RTVT_POST", true);//开启后处理插件
 
 ```
 
@@ -207,7 +210,7 @@
 ```
 >注意：
 >1. 调用使用插件接口时，需要保证channel中至少有2人在才可以调用，否则调用失败，插件无法使用。
->2. 进入channel后，插件会触发房间人员进入事件监听，并自动使用插件。如果不需要自动使用插件，请开发者自行进行设置。
+>2. 进入channel后，插件会触发房间人员进入事件监听(onRemoteAudioStateChanged)，并自动使用插件。如果不需要自动使用插件，请开发者自行进行设置。
 >3. 如果需要回调临时结果，需要设置`tempResult`为YES，默认为NO。默认识别结果和翻译结果的回调都为YES，如果又不需要，请设置为NO。
 
 
