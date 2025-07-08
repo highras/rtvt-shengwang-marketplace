@@ -4,8 +4,11 @@ import static io.agora.rtc2.Constants.CLIENT_ROLE_BROADCASTER;
 import static io.agora.rtc2.Constants.REMOTE_AUDIO_STATE_STARTING;
 import static io.agora.rtc2.Constants.RENDER_MODE_HIDDEN;
 
+import android.Manifest;
 import android.app.Activity;
+import android.app.appsearch.SearchResult;
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.TextUtils;
@@ -21,19 +24,24 @@ import android.widget.ListView;
 import android.widget.SeekBar;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 
-import com.yanzhenjie.permission.AndPermission;
-import com.yanzhenjie.permission.runtime.Permission;
+
+import com.hjq.permissions.OnPermissionCallback;
+import com.hjq.permissions.OnPermissionInterceptor;
+import com.hjq.permissions.Permission;
+import com.hjq.permissions.XXPermissions;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.List;
 
-import io.agora.api.example.utils.CommonUtil;
 import io.agora.rtc2.ChannelMediaOptions;
 import io.agora.rtc2.Constants;
 import io.agora.rtc2.ExtensionInfo;
@@ -80,6 +88,7 @@ public class SimpleExtension extends AppCompatActivity implements View.OnClickLi
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
+                Log.i("test",msg);
                 srcarrayList.add(msg);
                 srcadapter.notifyDataSetChanged();
             }
@@ -155,40 +164,7 @@ public class SimpleExtension extends AppCompatActivity implements View.OnClickLi
                 return;
             }
 
-            if (!AndPermission.hasPermissions(this, Permission.Group.STORAGE, Permission.Group.MICROPHONE, Permission.Group.CAMERA)) {
 
-                // Request permission
-                AndPermission.with(this).runtime().permission(
-                        Permission.Group.STORAGE,
-                        Permission.Group.MICROPHONE
-//                        Permission.Group.CAMERA
-                ).onGranted(permissions ->
-                {
-                    int result = engine.enableExtension(EXTENSION_VENDOR_NAME_PRE, EXTENSION_RTVT_FILTER_PRE, true);
-                    if (result <0){
-                        showAlert("enableExtension error:" +result + " " + EXTENSION_RTVT_FILTER_PRE );
-                        return;
-                    }
-
-                    result = engine.enableExtension(EXTENSION_VENDOR_NAME_POST, EXTENSION_RTVT_FILTER_POST, true);
-                    if (result <0){
-                        showAlert("enableExtension error:" +result + " " + EXTENSION_RTVT_FILTER_POST );
-                        return;
-                    }
-/*                    engine.enableVideo();
-                    TextureView textureView = new TextureView(this);
-                    if(local_view.getChildCount() > 0)
-                    {
-                        local_view.removeAllViews();
-                    }
-                    // Add to the local container
-                    local_view.addView(textureView, new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-                    // Setup local video to render your local camera preview
-                    engine.setupLocalVideo(new VideoCanvas(textureView, RENDER_MODE_HIDDEN, 0));
-                    engine.startPreview();*/
-                }).start();
-            }
-            else{
                 int result = engine.enableExtension(EXTENSION_VENDOR_NAME_PRE, EXTENSION_RTVT_FILTER_PRE, true);
                 if (result <0){
                     showAlert("enableExtension error:" +result + " " + EXTENSION_RTVT_FILTER_PRE );
@@ -209,9 +185,6 @@ public class SimpleExtension extends AppCompatActivity implements View.OnClickLi
                 local_view.addView(textureView, new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
                 engine.setupLocalVideo(new VideoCanvas(textureView, RENDER_MODE_HIDDEN, 0));
                 engine.startPreview();*/
-            }
-
-
 
 //            initMediaPlayer();
         }
@@ -246,6 +219,10 @@ public class SimpleExtension extends AppCompatActivity implements View.OnClickLi
         Class obj = null;
         if(v.getId() == R.id.starttrans){
             JSONObject jsonObject = new JSONObject();
+            if (livedata_translate_pid == 0 || livedata_translate_key.isEmpty() || livedata_translate_srclang.isEmpty() || livedata_translate_dstlang.isEmpty()) {
+                showAlert("Please set pid, key, srcLang, dstLang");
+                return;
+            }
             try {
                 jsonObject.put("srcLang", livedata_translate_srclang);
                 jsonObject.put("dstLang", livedata_translate_dstlang);
@@ -276,7 +253,7 @@ public class SimpleExtension extends AppCompatActivity implements View.OnClickLi
             }
             showShortToast("Start Translation");
         }else if(v.getId() == R.id.stoptrans){
-            showShortToast("End Translation");
+            showShortToast("Stop Translation");
             engine.setExtensionProperty(EXTENSION_VENDOR_NAME_PRE, EXTENSION_RTVT_FILTER_PRE, "closeAudioTranslation_pre", "{}");
         }
         else if (v.getId() == R.id.btn_join) {
@@ -284,24 +261,52 @@ public class SimpleExtension extends AppCompatActivity implements View.OnClickLi
                 showAlert("Please configure the agora appid and key");
                 return;
             }
+            String channelId = et_channel.getText().toString();
+
             if (!joined) {
-                CommonUtil.hideInputBoard(this, et_channel);
-                // call when join button hit
-                String channelId = et_channel.getText().toString();
-                // Check permission
-                if (AndPermission.hasPermissions(this, Permission.Group.STORAGE, Permission.Group.MICROPHONE)) {
+                if (ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO)
+                        == PackageManager.PERMISSION_GRANTED) {
                     joinChannel(channelId);
-                    return;
+                } else {
+                    XXPermissions.with(this)
+                            // 申请单个权限
+                            .permission(Permission.RECORD_AUDIO)
+                            // 设置权限请求拦截器（局部设置）
+                            .interceptor(new OnPermissionInterceptor() {
+                                @Override
+                                public void launchPermissionRequest(@NonNull Activity activity, @NonNull List<String> allPermissions, @Nullable OnPermissionCallback callback) {
+                                    OnPermissionInterceptor.super.launchPermissionRequest(activity, allPermissions, callback);
+                                }
+
+                                @Override
+                                public void grantedPermissionRequest(@NonNull Activity activity, @NonNull List<String> allPermissions, @NonNull List<String> grantedPermissions, boolean allGranted, @Nullable OnPermissionCallback callback) {
+                                    OnPermissionInterceptor.super.grantedPermissionRequest(activity, allPermissions, grantedPermissions, allGranted, callback);
+                                }
+
+                                @Override
+                                public void deniedPermissionRequest(@NonNull Activity activity, @NonNull List<String> allPermissions, @NonNull List<String> deniedPermissions, boolean doNotAskAgain, @Nullable OnPermissionCallback callback) {
+                                    OnPermissionInterceptor.super.deniedPermissionRequest(activity, allPermissions, deniedPermissions, doNotAskAgain, callback);
+                                }
+
+                                @Override
+                                public void finishPermissionRequest(@NonNull Activity activity, @NonNull List<String> allPermissions, boolean skipRequest, @Nullable OnPermissionCallback callback) {
+                                    OnPermissionInterceptor.super.finishPermissionRequest(activity, allPermissions, skipRequest, callback);
+                                }
+                            })
+                            // 设置不触发错误检测机制（局部设置）
+                            //.unchecked()
+                            .request(new OnPermissionCallback() {
+                                @Override
+                                public void onGranted(@NonNull List<String> permissions, boolean allGranted) {
+                                    joinChannel(channelId);
+                                }
+
+                                @Override
+                                public void onDenied(@NonNull List<String> permissions, boolean doNotAskAgain) {
+                                }
+                            });
                 }
-                // Request permission
-                AndPermission.with(this).runtime().permission(
-                        Permission.Group.STORAGE,
-                        Permission.Group.MICROPHONE
-                ).onGranted(permissions ->
-                {
-                    // Permissions Granted
-                    joinChannel(channelId);
-                }).start();
+                    return;
             } else {
                 joined = false;
                 /**After joining a channel, the user must call the leaveChannel method to end the
